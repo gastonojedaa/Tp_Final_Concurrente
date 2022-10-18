@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 public class PetriNet {
 
-    private int[][] incMatrix;
+    private int[][] incMatrix; //matriz de incidencia
     private int[][] backwardMatrix;
-    private int[][] sensTransitions;
+    private int[][] sensTransitions; //transiciones sensibilizadas
     private int[][] currentMarking;
 
     public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking) {
@@ -20,10 +20,10 @@ public class PetriNet {
     // getCurrentMarking
     public int[][] getCurrentMarking() {
         return currentMarking;
-    }
+    } //devuelve el marcado actual
 
     // getSensTransitions
-    public int[][] getSensTransitions() {
+    public int[][] getSensTransitions() {   //devuelve las transiciones sensibilizadas
         // System.out.println(Constants.TRANSITIONS_COUNT);
         // System.out.println(Constants.PLACES_COUNT);
         int[][] sensTransitions = new int[1][Constants.TRANSITIONS_COUNT];
@@ -32,7 +32,7 @@ public class PetriNet {
             // System.out.println(i);
             for (int j = 0; j < Constants.PLACES_COUNT; j++) {
                 // System.out.println(j);
-                if (backwardMatrix[j][i] == 1 && backwardMatrix[j][i] > currentMarking[0][j]) {
+                if (backwardMatrix[j][i] == 1 && backwardMatrix[j][i] > currentMarking[0][j]) { //si la transicion no esta sensibilizada
                     sensTransitions[0][i] = 0;
                     break;
                 } else
@@ -43,7 +43,7 @@ public class PetriNet {
     }
     // updateMarking
 
-    public int updateMarking(int[][] fireSequence) {
+    public int updateMarking(int[][] fireSequence) { //actualiza el marcado actual
 
         System.out.println(Arrays.deepToString(currentMarking));
         try {
