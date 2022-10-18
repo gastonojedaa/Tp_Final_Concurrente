@@ -54,6 +54,19 @@ public final class Matrix {
         return result;
     }
 
+    public static int[][] transpose(int[][] A) {
+
+        int numberOfRowsA = A.length;
+        int numberOfColsA = A[0].length;
+        int[][] transpose = new int[numberOfColsA][numberOfRowsA];
+
+        for (int i = 0; i < numberOfRowsA; i++)
+            for (int j = 0; j < numberOfColsA; j++)
+                transpose[j][i] = A[i][j];
+
+        return transpose;
+    }
+
     // Unused but may be helpful in the future
     private static int dotProduct(int[] vectorA, int[] vectorB) {
 
