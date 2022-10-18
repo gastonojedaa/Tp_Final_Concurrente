@@ -2,7 +2,7 @@ package utils;
 
 public final class Constants {
 
-    public static final int[][] INCIDENCE_MATRIX  = new int [][]{
+    public static final int[][] INCIDENCE_MATRIX  = new int [][]{   //
             {-1,0,0,0,0,0,0,0,1,0,0,0},
             {-1,0,0,0,0,0,0,1,0,-1,1,0},
             {0,-1,0,1,0,0,0,0,0,0,0,0},
