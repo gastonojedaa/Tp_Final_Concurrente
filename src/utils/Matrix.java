@@ -2,7 +2,7 @@ package utils;
 
 public final class Matrix {
 
-    public static int[][] multiply(int[][] A, int[][] B) throws Exception {
+    public static int[][] multiply(int[][] A, int[][] B) throws Exception { //
 
         // Check matrix dimensions
         int numberOfRowsA = A.length;
