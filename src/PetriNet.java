@@ -45,6 +45,7 @@ public class PetriNet {
 
     public int updateMarking(int[][] fireSequence) {
 
+        System.out.println("[[P1-P100-P13-P14-P15-P16-P17-P18-P2-P200-P25-P26-P28-P3-P300-P4-P5-P6]]");
         System.out.println(Arrays.deepToString(currentMarking));
         try {
 
@@ -57,9 +58,9 @@ public class PetriNet {
             System.out.println("Error: " + e.getMessage());
             return -1;
         }
+        System.out.println("[[P1-P100-P13-P14-P15-P16-P17-P18-P2-P200-P25-P26-P28-P3-P300-P4-P5-P6]]");
         System.out.println(Arrays.deepToString(currentMarking));
 
         return 0;
     }
-
 }

@@ -16,6 +16,7 @@ public class Main {
         for (int i = 0; i < firingAmount; i++) {
             int[][] sensTransitions = petriNet.getSensTransitions();
 
+            System.out.println("[[T1-T13-T14-T15-T16-T17-T18-T2-T3-T4-T5-T6]]");
             System.out.println(Arrays.deepToString(sensTransitions));
 
             ArrayList<Integer> sensTransitionsIndex = new ArrayList<Integer>();
