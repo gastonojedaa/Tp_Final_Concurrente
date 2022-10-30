@@ -22,6 +22,10 @@ public class PetriNet {
         return currentMarking;
     }
 
+    public int[][] getIncidenceMatrix() {
+        return incMatrix;
+    }
+    
     // getSensTransitions
     public int[][] getSensTransitions() {
         // System.out.println(Constants.TRANSITIONS_COUNT);
