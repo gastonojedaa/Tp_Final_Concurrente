@@ -16,6 +16,11 @@ public class PetriNet {
     }
 
     // fireTransition
+    public void fireTransition(int transition) {
+        int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT]; //se crea con 1 fila y TRANSITIONS_COUNT columnas
+        fireSequence[0][transition] = 1;
+        updateMarking(fireSequence);
+    }   
 
     // getCurrentMarking
     public int[][] getCurrentMarking() {
@@ -46,12 +51,10 @@ public class PetriNet {
         return sensTransitions;
     }
     // updateMarking
-
     public int updateMarking(int[][] fireSequence) {
 
         System.out.println(Arrays.deepToString(currentMarking));
         try {
-
             this.currentMarking = Matrix.add(currentMarking,
                     Matrix.transpose(Matrix.multiply(incMatrix, Matrix.transpose(fireSequence))));
             // Fundamental
@@ -65,5 +68,7 @@ public class PetriNet {
 
         return 0;
     }
+
+    
 
 }
