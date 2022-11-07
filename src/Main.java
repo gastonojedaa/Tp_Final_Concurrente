@@ -32,7 +32,7 @@ public class Main {
 
             System.out.println(rand);
 
-            int[][] fireSequence = new int[0][Constants.TRANSITIONS_COUNT];
+            int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
 
             fireSequence[0][sensTransitionsIndex.get(rand)] = 1;
 

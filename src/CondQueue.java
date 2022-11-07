@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import utils.Matrix;
+import java.util.Queue; /*A collection designed for holding elements prior to processing. Besides basic Collection operations, queues provide additional 
+insertion, extraction, and inspection operations.*/
 
 public class CondQueue {
     private int size;

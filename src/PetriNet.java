@@ -22,6 +22,8 @@ public class PetriNet {
         updateMarking(fireSequence);
     }   
 
+    
+
     // getCurrentMarking
     public int[][] getCurrentMarking() {
         return currentMarking;
