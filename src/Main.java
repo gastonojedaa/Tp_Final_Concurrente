@@ -20,7 +20,7 @@ public class Main {
 
             ArrayList<Integer> sensTransitionsIndex = new ArrayList<Integer>();
 
-            for (int j = 0; j < Constants.TRANSITIONS_COUNT; j++) {
+            for (int j = 0; j < Constants.TRANSITIONS_LENGTH; j++) {
                 if (sensTransitions[0][j] == 1) {
                     sensTransitionsIndex.add(j);
                 }
@@ -32,7 +32,7 @@ public class Main {
 
             System.out.println(rand);
 
-            int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
+            int[][] fireSequence = new int[1][Constants.TRANSITIONS_LENGTH];
 
             fireSequence[0][sensTransitionsIndex.get(rand)] = 1;
 

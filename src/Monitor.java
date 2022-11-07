@@ -22,15 +22,18 @@ public class Monitor {
     }
 
     /***
-     * Este método es llamado por los hilos que quieren entrar al monitor. Toma como parámetro el hilo. 
+     * Este método es llamado por los hilos que quieren entrar al monitor. Toma como
+     * parámetro el hilo.
+     * 
      * @param thread
      * @throws InterruptedException
      */
     public void enterMonitor(TaskThread thread) throws InterruptedException {
-        waitingQueueLength = executeTask.getQueueLength(); //hilos que ya están adentro del monitor, pero no terminaron su ejecución
+        waitingQueueLength = executeTask.getQueueLength(); // hilos que ya están adentro del monitor, pero no terminaron
+                                                           // su ejecución
         try {
-            enterMonitor.acquire();   // Entrada al monitor. Si no lo puede tomar, se coloca en la cola
-            executeTask.acquire();    // Monitor. 
+            enterMonitor.acquire(); // Entrada al monitor. Si no lo puede tomar, se coloca en la cola
+            executeTask.acquire(); // Monitor.
             System.out.println("Thread " + thread.getId() + " entered monitor");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -43,14 +46,13 @@ public class Monitor {
      * @param thread
      * @throws InterruptedException
      */
-    private void execute(TaskThread thread) throws InterruptedException{
-        if(petriNet.isFireable(thread.getFireSequence())){ // Si la transición es disparable
+    private void execute(TaskThread thread) throws InterruptedException {
+        if (petriNet.isFireable(thread.getFireSequence())) { // Si la transición es disparable
             petriNet.fireTransition(thread.getFireSequence()); // Dispara la transición
-            if(waitingQueueLength > 0){ // Si hay hilos en la cola
+            if (waitingQueueLength > 0) { // Si hay hilos en la cola
                 executeTask.release(); // Libera el monitor a los que ya están adentro
                 System.out.println("Thread " + thread.getId() + " released monitor");
-            }
-            else{
+            } else {
                 enterMonitor.release(); // Libera la entrada al monitor
                 System.out.println("Thread " + thread.getId() + " released monitor");
             }

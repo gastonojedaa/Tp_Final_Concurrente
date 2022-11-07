@@ -1,10 +1,10 @@
 public class TaskThread implements Runnable {
     //los hilos son los "caminos"
-    int[] fireSequence;
+    int[][] fireSequence;
     Monitor monitor;
     private int threadId;
 
-    public TaskThread(int[] fireSequence, Monitor monitor, int threadId) {
+    public TaskThread(int[][] fireSequence, Monitor monitor, int threadId) {
         this.fireSequence = fireSequence;
         this.monitor = monitor;
         this.threadId = threadId;
@@ -30,7 +30,7 @@ public class TaskThread implements Runnable {
     /** Devuelve la secuencia de disparo del hilo 
      * @return the fireSequence
      */
-    public int[] getFireSequence() {
+    public int[][] getFireSequence() {
         return fireSequence;
     }
 }
