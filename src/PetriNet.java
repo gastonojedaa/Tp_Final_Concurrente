@@ -6,7 +6,6 @@ public class PetriNet {
 
     private int[][] incMatrix;
     private int[][] backwardMatrix;
-    private int[][] sensTransitions;
     private int[][] currentMarking;
 
     public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking) {
@@ -41,6 +40,15 @@ public class PetriNet {
         }
         return sensTransitions;
     }
+
+    public Boolean isTransitionValid(int transitionIndex) {
+        int[][] sensTransitions = getSensTransitions();
+        if (sensTransitions[0][transitionIndex] == 1)
+            return true;
+        else
+            return false;
+    }
+
     // updateMarking
 
     public int updateMarking(int[][] fireSequence) {
@@ -62,5 +70,16 @@ public class PetriNet {
         System.out.println(Arrays.deepToString(currentMarking));
 
         return 0;
+    }
+
+    public Boolean tryUpdateMarking(int transitionIndex) {
+        Boolean isTransitionValid = this.isTransitionValid(transitionIndex);
+        if (!isTransitionValid)
+            return false;
+
+        int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
+        fireSequence[0][transitionIndex] = 1;
+        this.updateMarking(fireSequence);
+        return true;
     }
 }

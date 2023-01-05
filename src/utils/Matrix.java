@@ -11,17 +11,18 @@ public final class Matrix {
         int numberOfColsB = B[0].length;
 
         if (numberOfColsA != numberOfRowsB) {
-            throw new Exception("Error while multiplying matrices. Number of rows of first matrix should match the number of columns of the second one");
+            throw new Exception(
+                    "Error while multiplying matrices. Number of rows of first matrix should match the number of columns of the second one");
         }
 
-        int[][] result = new int[numberOfRowsA][numberOfColsB ];
+        int[][] result = new int[numberOfRowsA][numberOfColsB];
 
         // Matrix multiplication operation
         for (int row = 0; row < result.length; row++) {
             for (int col = 0; col < result[0].length; col++) {
 
                 // Dot Product
-                for (int i = 0; i < numberOfRowsB ; i++)
+                for (int i = 0; i < numberOfRowsB; i++)
                     result[row][col] = result[row][col] + A[row][i] * B[i][col];
             }
         }
@@ -38,7 +39,8 @@ public final class Matrix {
         int numberOfColsB = B[0].length;
 
         if (numberOfColsA != numberOfColsB | numberOfRowsA != numberOfRowsB) {
-            throw new Exception("Error while adding matrices. Number of rows and columns should be equal for both matrices.");
+            throw new Exception(
+                    "Error while adding matrices. Number of rows and columns should be equal for both matrices.");
         }
 
         int[][] result = new int[numberOfRowsA][numberOfColsA];
