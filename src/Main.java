@@ -27,14 +27,10 @@ public class Main {
             threads[i].start();
         }
 
-        for (int i = 0; i < Constants.THREADS_COUNT; i++) {
-            try {
-                threads[i].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while (!monitor.isFinalized()) {
         }
 
         System.out.println("Finalizado");
+
     }
 }

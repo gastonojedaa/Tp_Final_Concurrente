@@ -7,12 +7,16 @@ public class Monitor {
     private Semaphore mutex;
     private PetriNet petriNet;
     private int transitionToBeFired;
+    private int numberOfTransitionsFired;
+    private Boolean finalized;
 
     // k del video de mico
     private Boolean canBeFired;
 
     public Monitor() {
         petriNet = new PetriNet(Constants.INCIDENCE_MATRIX, Constants.BACKWARD_MATRIX, Constants.INITIAL_MARKING);
+        numberOfTransitionsFired = 0;
+        finalized = false;
 
         // mutex del monitor
         mutex = new Semaphore(1);
@@ -20,7 +24,7 @@ public class Monitor {
         // colas de transiciones
         transitionQueues = new Semaphore[Constants.TRANSITIONS_COUNT];
         for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
-            transitionQueues[i] = new Semaphore(3);// TODO Reemplazar 3 por constante
+            transitionQueues[i] = new Semaphore(0);
         }
     }
 
@@ -40,28 +44,44 @@ public class Monitor {
         while (canBeFired) {
 
             // Disparo la transicion, si esta sensibilizada devuelve true
+            if (finalized)
+                return;
             canBeFired = petriNet.tryUpdateMarking(transitionToBeFired);
 
             if (!canBeFired) {
                 mutex.release();
                 try {
-                    transitionQueues[transitionToBeFired].wait();
+                    transitionQueues[transitionToBeFired].acquire();
+                    if (finalized)
+                        return;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
             else {
-
+                numberOfTransitionsFired++;
+                if (numberOfTransitionsFired == 50)
+                    finalized = true;
+                // System.out.println("Disparo transicion T" +
+                // Constants.transitionIndexes[transitionToBeFired]);
+                // System.out.println("Transiciones disparadas: " + numberOfTransitionsFired);
+                // System.out.println("-------------------------------------------------------");
                 // Que transiciones estan sensibilizadas
                 int[][] sensTransitions = petriNet.getSensTransitions();
+
+                int[] queuesLength = new int[Constants.TRANSITIONS_COUNT];
+                for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
+                    queuesLength[i] = transitionQueues[i].getQueueLength();
+                }
+                System.out.println("Colas de transiciones: " + java.util.Arrays.toString(queuesLength));
 
                 // De estas transiciones, cual tiene hilos esperando
                 for (int i = 0; i < sensTransitions.length; i++) {
                     if (sensTransitions[0][i] == 1 && transitionQueues[i].hasQueuedThreads()) {
                         // Disparo el primer hilo que este esperando //TODO Usar politicas
                         transitionToBeFired = i;
-                        transitionQueues[i].notify();
+                        transitionQueues[i].release();
                         return;
                     }
                 }
@@ -76,5 +96,9 @@ public class Monitor {
         }
 
         mutex.release();
+    }
+
+    public Boolean isFinalized() {
+        return finalized;
     }
 }

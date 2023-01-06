@@ -60,8 +60,11 @@ public final class Constants {
         public static final int T5_INDEX = 10;
         public static final int T6_INDEX = 11;
 
+        public static final int[] transitionIndexes = { 1, 13, 14, 15, 16, 17, 18, 2, 3, 4, 5, 6 };
+
         public static final int[] T_INVARIANT_1 = { T1_INDEX, T2_INDEX, T3_INDEX };
         public static final int[] T_INVARIANT_2 = { T4_INDEX, T5_INDEX, T6_INDEX };
         public static final int[] T_INVARIANT_3 = { T13_INDEX, T14_INDEX, T15_INDEX };
         public static final int[] T_INVARIANT_4 = { T16_INDEX, T17_INDEX, T18_INDEX };
+
 }
