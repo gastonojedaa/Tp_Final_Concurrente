@@ -3,7 +3,8 @@ import utils.Constants;
 
 public class Monitor {
 
-    private Semaphore[] transitionQueues;// TODO Revisar esto
+    private Semaphore[] transitionQueues;
+    // private int[] transitionQueuesQuantity;
     private Semaphore mutex;
     private PetriNet petriNet;
     private int transitionToBeFired;
@@ -70,12 +71,13 @@ public class Monitor {
 
             else {
                 numberOfTransitionsFired++;
-                if (numberOfTransitionsFired == 500)
+                if (numberOfTransitionsFired == 1000)
                     finalized = true;
-                System.out.println("Disparo transicion T" +
+                System.out.println("Se disparo transicion T" +
                         Constants.transitionIndexes[transitionToBeFired]);
+                System.out.println("Indice transicion : " + transitionToBeFired);
                 System.out.println("Transiciones disparadas: " + numberOfTransitionsFired);
-                System.out.println("-------------------------------------------------------");
+
                 // Que transiciones estan sensibilizadas
                 int[][] sensTransitions = petriNet.getSensTransitions();
 
@@ -84,6 +86,9 @@ public class Monitor {
                     queuesLength[i] = transitionQueues[i].getQueueLength();
                 }
                 System.out.println("Colas de transiciones: " + java.util.Arrays.toString(queuesLength));
+                System.out.println("Transiciones sensibilizadas: " + java.util.Arrays.toString(sensTransitions[0]));
+                System.out.print("Marcado actual: " + java.util.Arrays.deepToString(petriNet.getCurrentMarking()));
+                System.out.println("-------------------------------------------------------");
 
                 // De estas transiciones, cual tiene hilos esperando
                 for (int i = 0; i < queuesLength.length; i++) {
