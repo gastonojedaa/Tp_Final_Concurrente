@@ -18,7 +18,7 @@ public class Worker implements Runnable {
             monitor.fire(transitionsIndex[index]);
             System.out.println(
                     "Disparo transicion T" + Constants.transitionIndexes[transitionsIndex[index]] + " desde el thread "
-                            + Thread.currentThread().threadId());
+                            + Thread.currentThread().getId());
             index = (index + 1) % transitionsIndex.length;
         }
     }

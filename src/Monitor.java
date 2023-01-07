@@ -51,6 +51,7 @@ public class Monitor {
             if (!canBeFired) {
                 mutex.release();
                 try {
+                    // Lo pone en la cola de espera, ya que no hay tokens que pueda tomar
                     transitionQueues[transitionToBeFired].acquire();
                     if (finalized)
                         return;
@@ -77,7 +78,8 @@ public class Monitor {
                 System.out.println("Colas de transiciones: " + java.util.Arrays.toString(queuesLength));
 
                 // De estas transiciones, cual tiene hilos esperando
-                for (int i = 0; i < sensTransitions.length; i++) {
+                for (int i = 0; i < queuesLength.length; i++) {
+                    
                     if (sensTransitions[0][i] == 1 && transitionQueues[i].hasQueuedThreads()) {
                         // Disparo el primer hilo que este esperando //TODO Usar politicas
                         transitionToBeFired = i;

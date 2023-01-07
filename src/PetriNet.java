@@ -21,7 +21,10 @@ public class PetriNet {
         return currentMarking;
     }
 
-    // getSensTransitions
+    /**
+     * 
+     * @return vector de transiciones sensibilizadas
+     */
     public int[][] getSensTransitions() {
         // System.out.println(Constants.TRANSITIONS_COUNT);
         // System.out.println(Constants.PLACES_COUNT);
@@ -72,6 +75,10 @@ public class PetriNet {
         return 0;
     }
 
+    /**
+    *  @return true si pudo disparar la transicion, false si no pudo porque no era válida
+    * @param transitionIndex indice de la transicion a disparar
+    */
     public Boolean tryUpdateMarking(int transitionIndex) {
         Boolean isTransitionValid = this.isTransitionValid(transitionIndex);
         if (!isTransitionValid)
