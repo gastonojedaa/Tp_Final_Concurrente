@@ -5,20 +5,19 @@ public class Worker implements Runnable {
     private int index;
     private int[] transitionsIndex;
     private Monitor monitor;
+    private Boolean working;
 
     public Worker(Monitor _monitor, int[] _transitionsIndex) {
         monitor = _monitor;
         transitionsIndex = _transitionsIndex;
         index = 0;
+        working = true;
     }
 
     @Override
     public void run() {
-        while (!monitor.isFinalized()) {
-            monitor.fire(transitionsIndex[index]);
-            System.out.println(
-                    "Disparo transicion T" + Constants.transitionIndexes[transitionsIndex[index]] + " desde el thread "
-                            + Thread.currentThread().getId());
+        while (working) {
+            working = monitor.fire(transitionsIndex[index]);
             index = (index + 1) % transitionsIndex.length;
         }
     }
