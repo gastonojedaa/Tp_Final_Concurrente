@@ -20,5 +20,6 @@ public class Worker implements Runnable {
             working = monitor.fire(transitionsIndex[index]);
             index = (index + 1) % transitionsIndex.length;
         }
+        System.out.println("Salí sin querer");
     }
 }
