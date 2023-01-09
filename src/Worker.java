@@ -1,25 +1,19 @@
-import utils.Constants;
-
 public class Worker implements Runnable {
 
-    private int index;
+    private int index = 0;
+    //private Boolean working = true;
     private int[] transitionsIndex;
-    private Monitor monitor;
-    private Boolean working;
 
-    public Worker(Monitor _monitor, int[] _transitionsIndex) {
-        monitor = _monitor;
+    public Worker(int[] _transitionsIndex) {
         transitionsIndex = _transitionsIndex;
-        index = 0;
-        working = true;
     }
 
     @Override
     public void run() {
-        while (working) {
-            working = monitor.fire(transitionsIndex[index]);
-            index = (index + 1) % transitionsIndex.length;
+        while (true) {
+            Monitor.getInstance().fire2(transitionsIndex[index], false);
+            //Monitor.getInstance().fire(transitionsIndex[index]);
+            index = index == 2 ? 0 : index + 1;
         }
-        System.out.println("Salí sin querer");
     }
 }

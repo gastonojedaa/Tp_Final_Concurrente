@@ -1,6 +1,5 @@
 import utils.Constants;
 import utils.Matrix;
-import java.util.Arrays;
 
 public class PetriNet {
 
@@ -44,6 +43,11 @@ public class PetriNet {
         return sensTransitions;
     }
 
+    /**
+     * 
+     * @param transitionIndex
+     * @return True si transitionIndex es una transición sensibilizada
+     */
     public Boolean isTransitionValid(int transitionIndex) {
         int[][] sensTransitions = getSensTransitions();
         if (sensTransitions[0][transitionIndex] == 1)
