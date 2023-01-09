@@ -7,11 +7,9 @@ public class Monitor {
     // private int[] transitionQueuesQuantity;
     private static Semaphore mutex;
     private static PetriNet petriNet;
-    private static int transitionToBeFired;
     private static int[] waitingThreads;
     private static int numberOfTransitionsFired;
     private static Boolean finalized;
-    private static int transitionWaitingToBeFired;
     // k del video de mico
     private Boolean canBeFired;
 
@@ -44,8 +42,15 @@ public class Monitor {
         return Monitor.instance;
     }
 
-
+/**
+ * Dispara la transición indicada por el índice. Si no puede dispararse, ingresa a una cola de espera, donde cada elemento del arreglo corresponde a una transición.
+ * En el caso en el que sí puede dispararse, actualiza el marcado de la red y dispara la primera transición que tenga hilos esperando.
+ * Cuando un hilo despierta de la cola de espera, llama recursivamente a la función, sin intentar tomar el mutex y con la transición correspondiente como parámetro.
+ * @param transitionIndex
+ * @param wentToSleep
+ */
     public void fire2(int transitionIndex, boolean wentToSleep) {
+        //Si entra desde la cola de entrada, intenta tomar el mutex.
         if (!wentToSleep) {
             try {
                 mutex.acquire(); // si no lo puedo tomar me voy a la cola
@@ -58,12 +63,13 @@ public class Monitor {
         canBeFired = petriNet.tryUpdateMarking(transitionIndex);
 
         if (canBeFired) {
+            //Si puede dispararse, incrementa el número de transiciones disparadas
             numberOfTransitionsFired++;
             System.out.println("Number of transitions fired = " + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 700){
                 finalized = true;
                 return;
-        }
+            }
             int[][] sensTransitions = petriNet.getSensTransitions();
             // De estas transiciones, cual tiene hilos esperando
             for (int i = 0; i < waitingThreads.length; i++) {
@@ -74,15 +80,18 @@ public class Monitor {
                     return;
                 }
             }
+            //si no hay hilos esperando y que puedan ser disparados, libero el mutex
             mutex.release();
             return;
         } else {
+            //Si no puede dispararse, se va a dormir.
             try {
                 //System.out.println("Thread " + Thread.currentThread().getName() + " quiere disparar " + transitionIndex);   
                 waitingThreads[transitionIndex]++;
                 mutex.release();
                 //System.out.println("Colas de condicion = " + java.util.Arrays.toString(waitingThreads));
                 transitionQueues[transitionIndex].acquire();
+                //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
                 fire2(transitionIndex, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
