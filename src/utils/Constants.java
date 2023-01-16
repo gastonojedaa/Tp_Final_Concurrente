@@ -67,4 +67,7 @@ public final class Constants {
         public static final int[] T_INVARIANT_3 = { T13_INDEX, T14_INDEX, T15_INDEX };
         public static final int[] T_INVARIANT_4 = { T16_INDEX, T17_INDEX, T18_INDEX };
 
+        public static final String LOG_FILE_PATH = "";
+        public static final Boolean DEBUG = false;
+        public static final Boolean CONSOLE_LOGGING = true;
 }
