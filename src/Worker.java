@@ -1,5 +1,5 @@
 public class Worker implements Runnable {
-
+    private static Policy policy = Policy.getInstance();
     private int index = 0;
     //private Boolean working = true;
     private int[] transitionsIndex;
