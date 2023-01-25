@@ -1,12 +1,10 @@
 import utils.Constants;
 import utils.Matrix;
-import java.util.Arrays;
 
 public class PetriNet {
 
-    private int[][] incMatrix; //matriz de incidencia
+    private int[][] incMatrix;
     private int[][] backwardMatrix;
-    private int[][] sensTransitions; //transiciones sensibilizadas
     private int[][] currentMarking;
 
     public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking) {
@@ -20,10 +18,13 @@ public class PetriNet {
     // getCurrentMarking
     public int[][] getCurrentMarking() {
         return currentMarking;
-    } //devuelve el marcado actual
+    }
 
-    // getSensTransitions
-    public int[][] getSensTransitions() {   //devuelve las transiciones sensibilizadas
+    /**
+     * 
+     * @return vector de transiciones sensibilizadas
+     */
+    public int[][] getSensTransitions() {
         // System.out.println(Constants.TRANSITIONS_COUNT);
         // System.out.println(Constants.PLACES_COUNT);
         int[][] sensTransitions = new int[1][Constants.TRANSITIONS_COUNT];
@@ -32,7 +33,7 @@ public class PetriNet {
             // System.out.println(i);
             for (int j = 0; j < Constants.PLACES_COUNT; j++) {
                 // System.out.println(j);
-                if (backwardMatrix[j][i] == 1 && backwardMatrix[j][i] > currentMarking[0][j]) { //si la transicion no esta sensibilizada
+                if (backwardMatrix[j][i] == 1 && backwardMatrix[j][i] > currentMarking[0][j]) {
                     sensTransitions[0][i] = 0;
                     break;
                 } else
@@ -41,11 +42,26 @@ public class PetriNet {
         }
         return sensTransitions;
     }
+
+    /**
+     * 
+     * @param transitionIndex
+     * @return True si transitionIndex es una transición sensibilizada
+     */
+    public Boolean isTransitionValid(int transitionIndex) {
+        int[][] sensTransitions = getSensTransitions();
+        if (sensTransitions[0][transitionIndex] == 1)
+            return true;
+        else
+            return false;
+    }
+
     // updateMarking
 
-    public int updateMarking(int[][] fireSequence) { //actualiza el marcado actual
+    public int updateMarking(int[][] fireSequence) {
 
-        System.out.println(Arrays.deepToString(currentMarking));
+        // System.out.println("[[P1-P100-P13-P14-P15-P16-P17-P18-P2-P200-P25-P26-P28-P3-P300-P4-P5-P6]]");
+        // System.out.println(Arrays.deepToString(currentMarking));
         try {
 
             this.currentMarking = Matrix.add(currentMarking,
@@ -57,9 +73,24 @@ public class PetriNet {
             System.out.println("Error: " + e.getMessage());
             return -1;
         }
-        System.out.println(Arrays.deepToString(currentMarking));
+        // System.out.println("[[P1-P100-P13-P14-P15-P16-P17-P18-P2-P200-P25-P26-P28-P3-P300-P4-P5-P6]]");
+        // System.out.println(Arrays.deepToString(currentMarking));
 
         return 0;
     }
 
+    /**
+    *  @return true si pudo disparar la transicion, false si no pudo porque no era válida
+    * @param transitionIndex indice de la transicion a disparar
+    */
+    public Boolean tryUpdateMarking(int transitionIndex) {
+        Boolean isTransitionValid = this.isTransitionValid(transitionIndex);
+        if (!isTransitionValid)
+            return false;
+
+        int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
+        fireSequence[0][transitionIndex] = 1;
+        this.updateMarking(fireSequence);
+        return true;
+    }
 }
