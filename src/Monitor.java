@@ -18,25 +18,25 @@ public class Monitor {
     }
 
     public static synchronized Monitor getInstance() {
-        if (Monitor.instance == null) {
-            Monitor.instance = new Monitor();
-            Monitor.petriNet = new PetriNet(Constants.INCIDENCE_MATRIX, Constants.BACKWARD_MATRIX,
+        if (Monitor.instance == null) { 
+            Monitor.instance = new Monitor(); // se crea una instancia del monitor
+            Monitor.petriNet = new PetriNet(Constants.INCIDENCE_MATRIX, Constants.BACKWARD_MATRIX, //se crea una instancia de la red de petri
                     Constants.INITIAL_MARKING);
-            Monitor.numberOfTransitionsFired = 0;
+            Monitor.numberOfTransitionsFired = 0; 
             Monitor.finalized = false;
 
             // mutex del monitor
-            Monitor.mutex = new Semaphore(1);
+            Monitor.mutex = new Semaphore(1); //se crea un semaforo con valor 1 para el mutex
 
-            Monitor.waitingThreads = new int[Constants.TRANSITIONS_COUNT];
-            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
-                Monitor.waitingThreads[i] = 0;
+            Monitor.waitingThreads = new int[Constants.TRANSITIONS_COUNT]; //se crea un arreglo para los hilos que estan esperando
+            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) { 
+                Monitor.waitingThreads[i] = 0; 
             }
 
             // colas de transiciones
-            Monitor.transitionQueues = new Semaphore[Constants.TRANSITIONS_COUNT];
-            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
-                Monitor.transitionQueues[i] = new Semaphore(0);
+            Monitor.transitionQueues = new Semaphore[Constants.TRANSITIONS_COUNT]; //se crea un arreglo de semaforos para las colas de transiciones
+            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) { 
+                Monitor.transitionQueues[i] = new Semaphore(0); 
             }
         }
 
@@ -52,7 +52,7 @@ public class Monitor {
  */
     public void fire2(int transitionIndex, boolean wentToSleep) {
         //Si entra desde la cola de entrada, intenta tomar el mutex.
-        if (!wentToSleep) {
+        if (!wentToSleep) { 
             try {
                 mutex.acquire(); // si no lo puedo tomar me voy a la cola
             } catch (InterruptedException e) {
@@ -101,7 +101,7 @@ public class Monitor {
                 waitingThreads[transitionIndex]++;
                 mutex.release();
                 //System.out.println("Thread ID de hilo que se fue a dormir: " + Thread.currentThread().getId());
-                transitionQueues[transitionIndex].acquire();
+                transitionQueues[transitionIndex].acquire(); 
                 //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
                 fire2(transitionIndex, true);
             } catch (InterruptedException e) {

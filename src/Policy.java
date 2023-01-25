@@ -14,10 +14,10 @@ public class Policy {
     private static int[] counters = new int[4];
     private static Boolean[] invariants = new Boolean[4];
     private int fireableTransitions[] = new int[Constants.TRANSITIONS_COUNT];
-    private static ArrayList<Integer> transInv0;
     private static ArrayList<Integer> transInv1;
     private static ArrayList<Integer> transInv2;
     private static ArrayList<Integer> transInv3;
+    private static ArrayList<Integer> transInv4;
 
     private Policy(){
 
@@ -30,10 +30,10 @@ public class Policy {
                 Policy.invariants[i] = false;
                 Policy.counters[i] = 0;
                 Policy.index = 0;
-                transInv0 = new ArrayList<>(Arrays.asList(0, 7, 8));
-                transInv1 = new ArrayList<>(Arrays.asList(9, 10, 11));
-                transInv2 = new ArrayList<>(Arrays.asList(1, 2, 3));
-                transInv3 = new ArrayList<>(Arrays.asList(4, 5, 6));
+                transInv1 = new ArrayList<>(Arrays.asList(1, 2, 3));
+                transInv2 = new ArrayList<>(Arrays.asList(4, 5, 6));
+                transInv3 = new ArrayList<>(Arrays.asList(13, 14, 15));
+                transInv4 = new ArrayList<>(Arrays.asList(16, 17, 18));
             }
         }
         return Policy.instance;
@@ -46,11 +46,11 @@ public class Policy {
     }
 
     static int whatInvIs(int trans){ // codigo pro LGBTQIA+ 
-        if (transInv0.contains(trans))
+        if (transInv1.contains(trans))
             return 0;
-        else if (transInv1.contains(trans))
-            return 1;
         else if (transInv2.contains(trans))
+            return 1;
+        else if (transInv3.contains(trans))
             return 2;
         else
             return 3;
