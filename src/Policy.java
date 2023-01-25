@@ -74,28 +74,45 @@ public class Policy {
             }
         }
 
-        int min = 0;
+       /*  int min = 0;
         for(int i = 0; i < 4; i++){
             if(invariants[i] == true){
                 if(counters[i] < counters[min]){
                     min = i;
                 }
             }
-        }
-        System.out.println("Contador 1: " + counters[0] + " Contador 2: " + counters[1] + " Contador 3: " + counters[2] + " Contador 4: " + counters[3]);
-        System.out.println("Contador min: " + min);
-        System.out.println("FireableTransitions: " + java.util.Arrays.toString(fireableTransitions));
-        
-        // return the fireable transition index of the invariant with the smallest counter
+        }  */
+        /* int min = 0;
         for(int i = 0; i < fireableTransitions.length; i++){
             if(fireableTransitions[i] == 1){
-                if(whatInvIs(i) == min){ 
-                    index = i;
-                    break;
-                } // ver caso donde la transicion disparable no coincide con el invariante con menos disparos
+                if(counters[whatInvIs(i)] < counters[min]){
+                    min = counters[i];
+                }
             }
-        }
-       
+        } */
+        
+        System.out.println("Contador 1: " + counters[0] + " \nContador 2: " + counters[1] + " \nContador 3: " + counters[2] + " \nContador 4: " + counters[3]);
+       // System.out.println("Contador min: " + min);
+        System.out.println("FireableTransitions: " + java.util.Arrays.toString(fireableTransitions));
+        
+ 
+        // choose index of fireable transition which has smaller counter value
+        int aux = 0;
+        int temp = Integer.MAX_VALUE;
+        for(int i = 0; i < fireableTransitions.length; i++){
+            if(fireableTransitions[i] == 1){
+                if(counters[whatInvIs(Constants.transitionIndexes[i])] < temp){  
+                    System.out.println("Contador mas chico que encontré: " + counters[whatInvIs(Constants.transitionIndexes[i])] + " que pertenece a "+ (whatInvIs(Constants.transitionIndexes[i])+1) + " en la pos " + i);
+                    temp = counters[whatInvIs(Constants.transitionIndexes[i])];
+                    aux = i;
+                    index = aux;
+                } // ver caso donde la transicion disparable no coincide con el invariante con menos disparos
+                else{
+                    System.out.println("Entré al else con: " + (counters[whatInvIs(Constants.transitionIndexes[i])] + " que pertenece a "+ whatInvIs(Constants.transitionIndexes[i])+1) + " en la pos " + i);
+                    index = aux;
+                }
+            }
+        } 
         System.out.println("Index: " + index);
         return index;
     }

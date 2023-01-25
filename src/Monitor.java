@@ -73,7 +73,7 @@ public class Monitor {
             System.out.println("Transición que se va a disparar = " + Constants.transitionIndexes[transitionIndex]);
             policy.increment(Constants.transitionIndexes[transitionIndex]);
             System.out.println("Number of transitions fired = " + numberOfTransitionsFired);
-            if (numberOfTransitionsFired == 15){
+            if (numberOfTransitionsFired == 100){
                 finalized = true;
                 return;
             }
