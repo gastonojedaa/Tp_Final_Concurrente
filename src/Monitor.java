@@ -59,8 +59,7 @@ public class Monitor {
                 e.printStackTrace();
             }
         }
-        //System.out.println("Current marking: " + java.util.Arrays.toString(petriNet.getCurrentMarking()[0]));
-        System.out.println("Colas de condicion = " + java.util.Arrays.toString(waitingThreads));
+        //System.out.println("Colas de condicion = " + java.util.Arrays.toString(waitingThreads));
         
         // si tengo el mutex puedo disparar
         canBeFired = petriNet.tryUpdateMarking(transitionIndex);
@@ -68,9 +67,6 @@ public class Monitor {
         if (canBeFired) {
             //Si puede dispararse, incrementa el número de transiciones disparadas
             numberOfTransitionsFired++;
-           // print transition index;
-            System.out.println("TransitionIndex = " + transitionIndex);
-            System.out.println("Transición que se va a disparar = " + Constants.transitionIndexes[transitionIndex]);
             policy.increment(Constants.transitionIndexes[transitionIndex]);
             System.out.println("Number of transitions fired = " + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 100){
@@ -78,12 +74,10 @@ public class Monitor {
                 return;
             }
             int[][] sensTransitions = petriNet.getSensTransitions();
-            System.out.println("Transiciones sens  = "+ java.util.Arrays.toString(sensTransitions[0]));
             // De estas transiciones, cual tiene hilos esperando
             for (int i = 0; i < waitingThreads.length; i++) {
                 if (sensTransitions[0][i] == 1 && waitingThreads[i] > 0) {
                     // Disparo el primer hilo que este esperando //TODO Usar politicas
-                    //System.out.println("Thread ID que quiere despertar un hilo: " + Thread.currentThread().getId());
                     i = policy.whoToFire(sensTransitions, waitingThreads);
                     waitingThreads[i]--;
                     transitionQueues[i].release();
@@ -91,16 +85,13 @@ public class Monitor {
                 }
             }
             //si no hay hilos esperando y que puedan ser disparados, libero el mutex
-            //System.out.println("Thread ID de hilo que no pudo despertar a nadie: " + Thread.currentThread().getId());
             mutex.release();
             return;
         } else {
             //Si no puede dispararse, se va a dormir.
             try {
-                //System.out.println("Thread " + Thread.currentThread().getName() + " quiere disparar " + transitionIndex);   
                 waitingThreads[transitionIndex]++;
                 mutex.release();
-                //System.out.println("Thread ID de hilo que se fue a dormir: " + Thread.currentThread().getId());
                 transitionQueues[transitionIndex].acquire();
                 //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
                 fire2(transitionIndex, true);
