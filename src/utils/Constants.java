@@ -70,4 +70,7 @@ public final class Constants {
         public static final String LOG_FILE_PATH = "";
         public static final Boolean DEBUG = false;
         public static final Boolean CONSOLE_LOGGING = true;
+
+        public static final int ALPHA = 1;
+        public static final int BETA = 5;
 }

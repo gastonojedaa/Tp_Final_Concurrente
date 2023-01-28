@@ -3,6 +3,7 @@ import utils.ConcurrentLogger;
 
 public class Main {
     public static void main(String[] args) {
+
         Thread[] threads = new Thread[Constants.THREADS_COUNT];
 
         for (int i = 0; i < 3; i++) {
