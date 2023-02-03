@@ -11,7 +11,7 @@ public class Worker implements Runnable {
     @Override
     public void run() {
         while (true) {
-            Monitor.getInstance().fire2(transitionsIndex[index], false);
+            Monitor.getInstance().fire2(transitionsIndex[index], false);            
             //Monitor.getInstance().fire(transitionsIndex[index]);
             index = index == 2 ? 0 : index + 1;
         }

@@ -37,7 +37,6 @@ public class Monitor {
                 Monitor.transitionQueues[i] = new Semaphore(0);
             }
         }
-
         return Monitor.instance;
     }
 
@@ -84,14 +83,26 @@ public class Monitor {
             //si no hay hilos esperando y que puedan ser disparados, libero el mutex
             mutex.release();
             return;
-        } else {
-            //Si no puede dispararse, se va a dormir.
+            //si entra al else es porque no se puede disparar, adentro se chequea si tiene que dormir o ir a la cola de espera
+        }else{
+            //Si no puede dispararse, se va a la cola de espera.
             try {
-                waitingThreads.decrement(transitionIndex);
-                mutex.release();
-                transitionQueues[transitionIndex].acquire();
-                //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
-                fire2(transitionIndex, true);
+                if(petriNet.sleepingThreads[transitionIndex] > 0){
+                    mutex.release();
+                    long timeToSleep = petriNet.howMuchToSleep(transitionIndex);
+                    // print id of the current thread
+                    System.out.println("Thread " + Thread.currentThread().getId() + " is going to sleep for " + timeToSleep + " ms");                    
+                    Thread.sleep(timeToSleep); 
+                    petriNet.sleepingThreads[transitionIndex] = 0;
+                    fire2(transitionIndex, false); // ver flag wentToSleep
+                }else{
+                    waitingThreads.decrement(transitionIndex);
+                    mutex.release();
+                    //como transitionIndex es un parámetro con el que se llama a la función, este es propio de cada hilo, ya no se sobreescribe una variable como ocurría antes.
+                    transitionQueues[transitionIndex].acquire(); // cola de espera de recursos
+                    //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
+                    fire2(transitionIndex, true);
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -101,4 +112,23 @@ public class Monitor {
     public Boolean isFinalized() {
         return finalized;
     }
+                        
+// ⢸⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⡷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠢⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+// ⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠈⠑⢦⡀⠀⠀⠀⠀⠀
+// ⢸⠀⠀⠀⠀⢀⠖⠒⠒⠒⢤⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠙⢦⡀⠀⠀⠀⠀
+// ⢸⠀⠀⣀⢤⣼⣀⡠⠤⠤⠼⠤⡄⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠙⢄⠀⠀⠀⠀
+// ⢸⠀⠀⠑⡤⠤⡒⠒⠒⡊⠙⡏⠀⢀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠑⠢⡄⠀
+// ⢸⠀⠀⠀⠇⠀⣀⣀⣀⣀⢀⠧⠟⠁⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀
+// ⢸⠀⠀⠀⠸⣀⠀⠀⠈⢉⠟⠓⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⠈⢱⡖⠋⠁⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⣠⢺⠧⢄⣀⠀⠀⣀⣀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⣠⠃⢸⠀⠀⠈⠉⡽⠿⠯⡆⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⣰⠁⠀⢸⠀⠀⠀⠀⠉⠉⠉⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠣⠀⠀⢸⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⠀⢸⠀⢇⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⠀⡌⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⢠⠃⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
+// ⢸⠀⠀⠀⠀⢸⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠷
+
 }

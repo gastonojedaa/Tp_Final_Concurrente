@@ -30,7 +30,7 @@ public class Main {
         logger.run();
         logger.logInfo("hola"); */
        // ConcurrentLogger.createLog();
-        ConcurrentLogger.writeLog("hola");
+       // ConcurrentLogger.writeLog("hola");
         
         while (!Monitor.getInstance().isFinalized()) {
         }

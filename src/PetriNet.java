@@ -10,7 +10,7 @@ public class PetriNet {
     private int[][] currentMarking;
     private static HashMap<Integer, Long> timeSensitiveTransitions;
     private int alpha, beta;
-    private static int[] sleepingThreads;
+    public int[] sleepingThreads;
     private static long currentPeriod;
 
     public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking, int alpha, int beta) {
@@ -117,10 +117,9 @@ public class PetriNet {
                     // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
                     // de espera, entonces me duermo
                     sleepingThreads[transitionIndex] = 1;
-                    // como lo mando a dormir??
                     return false;
                 } else {
-                    return false;
+                    return true;
                 }
             }
         }
@@ -174,8 +173,29 @@ public class PetriNet {
         }
     }
 
+    /* Forma de saber cuanto tiempo pasó desde que se sensibilizó la transición */
     private long getCurrentPeriod(int transitionIndex) {
         long currentPeriod = timeSensitiveTransitions.get(transitionIndex) - System.currentTimeMillis();
         return currentPeriod;
     }
+
+    /**
+     * Devuelve el tiempo que debe dormir el hilo que quiere disparar la transicion.
+     * @param transitionIndex
+     * @return long cuanto tiempo debe dormir el hilo
+     */
+    public long howMuchToSleep(int transitionIndex){
+        long time = 0;
+        long currentPeriod = getCurrentPeriod(transitionIndex);
+        //       alpha
+        // |---------------| 
+        // |----------------------------|
+        //             beta
+        //                 |------------|
+        //               ventana de disparo
+
+        time = alpha - currentPeriod;
+        return time;
+    }
+    
 }
