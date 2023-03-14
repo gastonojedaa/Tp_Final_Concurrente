@@ -47,7 +47,7 @@ public class Monitor {
  * @param transitionIndex
  * @param wentToSleep
  */
-    public void fire2(int transitionIndex, boolean wentToSleep) {
+    public void fire(int transitionIndex, boolean wentToSleep) {
         //Si entra desde la cola de entrada, intenta tomar el mutex.
         if (!wentToSleep) {
             try {
@@ -63,6 +63,8 @@ public class Monitor {
         if (canBeFired) {
             //Si puede dispararse, incrementa el número de transiciones disparadas
             numberOfTransitionsFired++;
+            //print thread id and what fired
+            System.out.println("Thread " + Thread.currentThread().getId() + " fired " + Constants.transitionIndexes[transitionIndex]);
             policy.increment(Constants.transitionIndexes[transitionIndex]);
             System.out.println("Number of transitions fired = " + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 100){
@@ -91,17 +93,19 @@ public class Monitor {
                     mutex.release();
                     long timeToSleep = petriNet.howMuchToSleep(transitionIndex);
                     // print id of the current thread
-                    System.out.println("Thread " + Thread.currentThread().getId() + " is going to sleep for " + timeToSleep + " ms");                    
+                    System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire " + Constants.transitionIndexes[transitionIndex] + " and is going to sleep for " + timeToSleep + " ms");                    
                     Thread.sleep(timeToSleep); 
                     petriNet.sleepingThreads[transitionIndex] = 0;
-                    fire2(transitionIndex, false); // ver flag wentToSleep
+                    System.out.println("Thread "+ Thread.currentThread().getId() + " woke up from sleeping");
+                    
+                    fire(transitionIndex, true); // ver flag wentToSleep
                 }else{
                     waitingThreads.decrement(transitionIndex);
                     mutex.release();
                     //como transitionIndex es un parámetro con el que se llama a la función, este es propio de cada hilo, ya no se sobreescribe una variable como ocurría antes.
                     transitionQueues[transitionIndex].acquire(); // cola de espera de recursos
                     //Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con la transición correspondiente.
-                    fire2(transitionIndex, true);
+                    fire(transitionIndex, true);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -111,8 +115,7 @@ public class Monitor {
 
     public Boolean isFinalized() {
         return finalized;
-    }
-                        
+    }           
 // ⢸⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⠉⡷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠢⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 // ⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠈⠑⢦⡀⠀⠀⠀⠀⠀
@@ -130,5 +133,4 @@ public class Monitor {
 // ⢸⠀⠀⠀⠀⠀⡌⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
 // ⢸⠀⠀⠀⠀⢠⠃⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
 // ⢸⠀⠀⠀⠀⢸⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠷
-
 }

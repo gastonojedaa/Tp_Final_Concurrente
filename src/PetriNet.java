@@ -118,9 +118,8 @@ public class PetriNet {
                     // de espera, entonces me duermo
                     sleepingThreads[transitionIndex] = 1;
                     return false;
-                } else {
-                    return true;
-                }
+                } 
+                return false;
             }
         }
 
@@ -173,9 +172,16 @@ public class PetriNet {
         }
     }
 
-    /* Forma de saber cuanto tiempo pasó desde que se sensibilizó la transición */
+    //tiempo que la transicion lleva sensibilizada
     private long getCurrentPeriod(int transitionIndex) {
-        long currentPeriod = timeSensitiveTransitions.get(transitionIndex) - System.currentTimeMillis();
+        long currentPeriod = System.currentTimeMillis() - timeSensitiveTransitions.get(transitionIndex);
+
+        // |----------------> 
+        // sensib           currentTimeMillis()
+
+        // print time sensitive transition and currentperiod
+        /* System.out.println("Transition: " + transitionIndex + " se sensibilizó: " + timeSensitiveTransitions.get(transitionIndex) + " tiempo actual: " + System.currentTimeMillis() + " periodo actual: " + currentPeriod);
+         */
         return currentPeriod;
     }
 
@@ -193,9 +199,8 @@ public class PetriNet {
         //             beta
         //                 |------------|
         //               ventana de disparo
-
+        
         time = alpha - currentPeriod;
         return time;
     }
-    
 }
