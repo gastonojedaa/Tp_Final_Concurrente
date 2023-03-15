@@ -25,15 +25,15 @@ public class PetriNet {
         sleepingThreads = new int[Constants.TRANSITIONS_COUNT];
         Arrays.fill(sleepingThreads, 0);
 
-        // inicializo las transiciones que son temporizadas
-        timeSensitiveTransitions.put(7, null); //trans 2
-        timeSensitiveTransitions.put(8, null);//  3
+        // Inicializo las transiciones que son temporizadas
+        timeSensitiveTransitions.put(7, null); // trans 2
+        timeSensitiveTransitions.put(8, null);// 3
         timeSensitiveTransitions.put(10, null);// 5
         timeSensitiveTransitions.put(11, null);// 6
-        timeSensitiveTransitions.put(2, null);//  14
-        timeSensitiveTransitions.put(3, null);//  15
-        timeSensitiveTransitions.put(5, null);//  17
-        timeSensitiveTransitions.put(6, null);//  18
+        timeSensitiveTransitions.put(2, null);// 14
+        timeSensitiveTransitions.put(3, null);// 15
+        timeSensitiveTransitions.put(5, null);// 17
+        timeSensitiveTransitions.put(6, null);// 18
     }
 
     // getCurrentMarking
@@ -118,17 +118,36 @@ public class PetriNet {
                     // de espera, entonces me duermo
                     sleepingThreads[transitionIndex] = 1;
                     return false;
-                } 
+                }
                 return false;
             }
         }
 
+        if (timeSensitiveTransitions.containsKey(transitionIndex))
+            setNewTimeStamp(transitionIndex);
+
         int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
         fireSequence[0][transitionIndex] = 1;
+        int[][] oldSensTransitions = getSensTransitions();
         this.updateMarking(fireSequence);
+        int[][] newSensTransitions = getSensTransitions();
 
+        for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
+            if (timeSensitiveTransitions.containsKey(i)) {
+                if (oldSensTransitions[0][i] == 0 && newSensTransitions[0][i] == 1)
+                    setNewTimeStamp(i);
+            }
+        }
+        // No es necesario actualizar el timestamp de las que quedan sin sensibilizar ya
+        // que
+        // no se puede disparar una transicion que no esta sensibilizadas por lo que
+        // nunca
+        // se va a leer el timestamp de la misma.
+        // Cuando esta se vuelva a sensibilizar se actualiza el timestamp
+        // if oldSensTrans==1 y newSensTransitions==0
+        // Null
         // actualizo la marca de tiempo en la que se sensibilizó la transición
-        setNewTimeStamp();
+
         // reset vector de espera
         return true;
     }
@@ -153,53 +172,48 @@ public class PetriNet {
     /**
      * Actualiza la marca de tiempo de las trancisiones temporales sensibilizadas
      */
-    private void setNewTimeStamp() {
+    private void setNewTimeStamp(int transitionIndex) {
         /*
          * cuando se actualiza el estado de la red, se actualiza el marcado, esto puede
          * hacer que dejen de estar sensibilizadas algunas transiciones que estaban
          * esperando y les debemos borrar la marca de tiempo, algunas que no estaban
          * sensibilizadas ahora si lo están y hay que actualizarles la marca de tiempo
          */
-        int[][] sensTransitions = getSensTransitions();
-        for (int keys : timeSensitiveTransitions.keySet()) {
-            if (sensTransitions[0][keys] == 1) {
-                timeSensitiveTransitions.put(keys, System.currentTimeMillis());
-            } else {
-                // se le borra la marca de tiempo de aquellas transiciones que no están
-                // sensibilizadas
-                timeSensitiveTransitions.put(keys, null);
-            }
-        }
+        timeSensitiveTransitions.put(transitionIndex, System.currentTimeMillis());
     }
 
-    //tiempo que la transicion lleva sensibilizada
+    // tiempo que la transicion lleva sensibilizada
     private long getCurrentPeriod(int transitionIndex) {
         long currentPeriod = System.currentTimeMillis() - timeSensitiveTransitions.get(transitionIndex);
 
-        // |----------------> 
-        // sensib           currentTimeMillis()
+        // |---------------->
+        // sensib currentTimeMillis()
 
         // print time sensitive transition and currentperiod
-        /* System.out.println("Transition: " + transitionIndex + " se sensibilizó: " + timeSensitiveTransitions.get(transitionIndex) + " tiempo actual: " + System.currentTimeMillis() + " periodo actual: " + currentPeriod);
+        /*
+         * System.out.println("Transition: " + transitionIndex + " se sensibilizó: " +
+         * timeSensitiveTransitions.get(transitionIndex) + " tiempo actual: " +
+         * System.currentTimeMillis() + " periodo actual: " + currentPeriod);
          */
         return currentPeriod;
     }
 
     /**
      * Devuelve el tiempo que debe dormir el hilo que quiere disparar la transicion.
+     * 
      * @param transitionIndex
      * @return long cuanto tiempo debe dormir el hilo
      */
-    public long howMuchToSleep(int transitionIndex){
+    public long howMuchToSleep(int transitionIndex) {
         long time = 0;
         long currentPeriod = getCurrentPeriod(transitionIndex);
-        //       alpha
-        // |---------------| 
+        // alpha
+        // |---------------|
         // |----------------------------|
-        //             beta
-        //                 |------------|
-        //               ventana de disparo
-        
+        // beta
+        // |------------|
+        // ventana de disparo
+
         time = alpha - currentPeriod;
         return time;
     }
