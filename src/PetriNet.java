@@ -108,11 +108,12 @@ public class PetriNet {
 
         // pregunto si es una transición temporal
         if (timeSensitiveTransitions.containsKey(transitionIndex)) {
-            // pregunto si estoy dentro de la ventana temporal
+            // pregunto si hay alguien esperando
             if (sleepingThreads[transitionIndex] == 1) {
                 // hay una transición esperando, nadie mas puede intentar dispararla
                 return false; // (?????)
-            } else if (testWindowPeriod(transitionIndex) == false) {
+            }
+            if (testWindowPeriod(transitionIndex) == false) {
                 if (getCurrentPeriod(transitionIndex) < alpha) {
                     // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
                     // de espera, entonces me duermo

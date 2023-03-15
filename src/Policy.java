@@ -80,6 +80,7 @@ public class Policy {
      * @return indice de transicion a disparar
      */
     public int whoToFire(int[][] sensTransitions, int[] waitingThreads) {
+        int fireableTransitionsCount = 0;
         // reset invariants
         for (int i = 0; i < invariants.length; i++) {
             invariants[i] = false;
@@ -91,35 +92,65 @@ public class Policy {
 
         for (int i = 0; i < sensTransitions[0].length; i++) {
             if (sensTransitions[0][i] == 1 && waitingThreads[i] > 0) {
+                fireableTransitionsCount++;
                 fireableTransitions[i] = 1;
                 transitionInv = whatInvIs(i);
                 invariants[transitionInv] = true;
             }
         }
 
+        if (fireableTransitionsCount == 0) {
+            return -1;
+        }
+
+        // Chequeo que invariante tengo que disparar
+        int invariantToFire = 0;
+        int currentCounter = Integer.MAX_VALUE;
+        for (int i = 0; i < invariants.length; i++) {
+            if (invariants[i] == true) {
+                if (counters[i] < currentCounter) {
+                    currentCounter = counters[i];
+                    invariantToFire = i;
+                }
+            }
+        }
+
+        // Del invariante que tengo que disparar busco la primer transicion
+        // sensibilizada
+        for (int i = 0; i < fireableTransitions.length; i++) {
+            if (fireableTransitions[i] == 1) {
+                if (whatInvIs(i) == invariantToFire) {
+                    return i;
+                }
+            }
+        }
+
+        System.out.print("Error en la política");
+        return -1;
         // System.out.println("Contador min: " + min);
         // System.out.println("FireableTransitions: " +
         // java.util.Arrays.toString(fireableTransitions));
 
         // choose index of fireable transition which has smaller counter value
-        int aux = 0;
-        int temp = Integer.MAX_VALUE;
-        for (int i = 0; i < fireableTransitions.length; i++) {
-            if (fireableTransitions[i] == 1) {
-                // si la transicion pertenece a un invariante con un contador mas chico que el
-                // que tengo guardado, lo actualizo
-                if (counters[whatInvIs(Constants.transitionIndexes[i])] < temp) {
-                    temp = counters[whatInvIs(Constants.transitionIndexes[i])];
-                    aux = i;
-                    index = aux;
-                } else {
-                    // si el contador al que pertenece la transición no es el mas chico, dejo el
-                    // indice que ya tengo guardado
-                    index = aux;
-                }
-            }
-        }
+        // int aux = 0;
+        // int temp = Integer.MAX_VALUE;
+        // for (int i = 0; i < fireableTransitions.length; i++) {
+        // if (fireableTransitions[i] == 1) {
+        // // si la transicion pertenece a un invariante con un contador mas chico que
+        // // el
+        // // que tengo guardado, lo actualizo
+        // if (counters[whatInvIs(Constants.transitionIndexes[i])] < temp) {
+        // temp = counters[whatInvIs(Constants.transitionIndexes[i])];
+        // aux = i;
+        // index = aux;
+        // } else {
+        // // si el contador al que pertenece la transición no es el mas chico, dejo el
+        // // indice que ya tengo guardado
+        // index = aux;
+        // }
+        // }
+        // }
         // System.out.println("Index: " + index);
-        return index;
+        // return index;
     }
 }

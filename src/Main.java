@@ -25,13 +25,14 @@ public class Main {
             threads[i] = new Thread(new Worker(Constants.T_INVARIANT_4));
             threads[i].start();
         }
-/* 
-        ConcurrentLogger logger = ConcurrentLogger.getInstance();
-        logger.run();
-        logger.logInfo("hola"); */
-       // ConcurrentLogger.createLog();
-       // ConcurrentLogger.writeLog("hola");
-        
+        /*
+         * ConcurrentLogger logger = ConcurrentLogger.getInstance();
+         * logger.run();
+         * logger.logInfo("hola");
+         */
+        // ConcurrentLogger.createLog();
+        // ConcurrentLogger.writeLog("hola");
+
         while (!Monitor.getInstance().isFinalized()) {
         }
         System.out.println("Finalizado");
