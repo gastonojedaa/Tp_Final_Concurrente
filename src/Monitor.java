@@ -5,7 +5,8 @@ public class Monitor {
     private static Monitor instance = null;
     private static Policy policy = Policy.getInstance();
     private static Semaphore[] transitionQueues;
-    private static WaitingQueues waitingThreads;
+   // private static WaitingQueues waitingThreads;
+    private static int waitingThreads[];
     // private static WaitingQueues sleepingThreads;
     private static Semaphore mutex;
     private static PetriNet petriNet;
@@ -21,8 +22,12 @@ public class Monitor {
             Monitor.instance = new Monitor();
             Monitor.petriNet = new PetriNet(Constants.INCIDENCE_MATRIX, Constants.BACKWARD_MATRIX,
                     Constants.INITIAL_MARKING, Constants.ALPHA, Constants.BETA);
-            Monitor.waitingThreads = new WaitingQueues(Constants.TRANSITIONS_COUNT);
+            //Monitor.waitingThreads = new WaitingQueues(Constants.TRANSITIONS_COUNT);
             // Monitor.sleepingThreads = new WaitingQueues(Constants.TRANSITIONS_COUNT);
+            waitingThreads = new int[Constants.TRANSITIONS_COUNT];
+            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
+                waitingThreads[i] = 0;
+            }
             Monitor.numberOfTransitionsFired = 0;
             Monitor.finalized = false;
 
@@ -79,10 +84,10 @@ public class Monitor {
             int[][] sensTransitions = petriNet.getSensTransitions();
             // De estas transiciones, cual tiene hilos esperando
             // Disparo el hilo que pertenezca al invariante con menor promedio de disparos
-            int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads.getQueue());
+            int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
 
             if (transitionToWakeUp != -1) {
-                waitingThreads.decrement(transitionIndex);
+                waitingThreads[transitionToWakeUp]--;
                 transitionQueues[transitionToWakeUp].release();
                 return;
             }
@@ -108,7 +113,7 @@ public class Monitor {
 
                     fire(transitionIndex, false); // ver flag wentToSleep
                 } else {
-                    waitingThreads.increment(transitionIndex);
+                    waitingThreads[transitionIndex]++; // incremento la cantidad de hilos esperando
                     mutex.release();
                     // como transitionIndex es un parámetro con el que se llama a la función, este
                     // es propio de cada hilo, ya no se sobreescribe una variable como ocurría
