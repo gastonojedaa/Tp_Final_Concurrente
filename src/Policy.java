@@ -5,7 +5,7 @@ import utils.Constants;
 
 public class Policy {
     private static Policy instance = null;
-    private static int index;
+    //private static int index;
     private static int transitionInv;
     private static int[] counters = new int[4];
     private static Boolean[] invariants = new Boolean[4];
@@ -29,7 +29,7 @@ public class Policy {
             for (int i = 0; i < 4; i++) {
                 Policy.invariants[i] = false;
                 Policy.counters[i] = 0;
-                Policy.index = 0;
+               // Policy.index = 0;
                 transInv1 = new ArrayList<>(Arrays.asList(1, 2, 3));
                 transInv2 = new ArrayList<>(Arrays.asList(4, 5, 6));
                 transInv3 = new ArrayList<>(Arrays.asList(13, 14, 15));

@@ -114,9 +114,12 @@ public class PetriNet {
                 return false; // (?????)
             }
             if (testWindowPeriod(transitionIndex) == false) {
+            /*     System.out.println("Thread " + Thread.currentThread().getId() + " periodo actual: " +
+                currentPeriod);    */
                 if (getCurrentPeriod(transitionIndex) < alpha) {
                     // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
                     // de espera, entonces me duermo
+
                     sleepingThreads[transitionIndex] = 1;
                     return false;
                 }
@@ -208,6 +211,11 @@ public class PetriNet {
     public long howMuchToSleep(int transitionIndex) {
         long time = 0;
         long currentPeriod = getCurrentPeriod(transitionIndex);
+        // print thread and current period
+        
+        /*  System.out.println("(Sleep)Thread " + Thread.currentThread().getId() + " periodo actual: " +
+         currentPeriod);         
+          */
         // alpha
         // |---------------|
         // |----------------------------|
