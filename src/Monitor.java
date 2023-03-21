@@ -109,9 +109,17 @@ public class Monitor {
             // Si no puede dispararse, se va a la cola de espera.
             try {
 
-    // ************************ Caso 1: tiene que dormir
-                if (petriNet.sleepingThreads[transitionIndex] > 0) {
-                    mutex.release();
+                // ************************ Caso 1: tiene que dormir
+                    int[][] sensTransitions = petriNet.getSensTransitions(); 
+                    if (petriNet.sleepingThreads[transitionIndex] > 0) {
+                    int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
+
+                    if (transitionToWakeUp != -1) {
+                        waitingThreads[transitionToWakeUp]--;
+                        transitionQueues[transitionToWakeUp].release();
+                    }else{
+                        mutex.release();
+                    }
                     // System.out.println("Thread " + Thread.currentThread().getId() + " released
                     // the mutex");
                     long timeToSleep = petriNet.howMuchToSleep(transitionIndex);
@@ -125,21 +133,17 @@ public class Monitor {
 
                     fire(transitionIndex, false); // ver flag wentToSleep
 
-    // ************************ Caso 2: no está sensibilizada
+                    // ************************ Caso 2: no está sensibilizada
                 } else if (!(petriNet.isTransitionValid(transitionIndex))) {
                     waitingThreads[transitionIndex]++; // incremento la cantidad de hilos esperando
                     mutex.release();
-                    // System.out.println("Thread " + Thread.currentThread().getId() + " released
-                    // the mutex (no sleep)");
-                    // como transitionIndex es un parámetro con el que se llama a la función, este
-                    // es propio de cada hilo, ya no se sobreescribe una variable como ocurría
-                    // antes.
                     transitionQueues[transitionIndex].acquire(); // cola de espera de recursos
                     // Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con
                     // la transición correspondiente.
                     fire(transitionIndex, true);
 
-    // ************************ Caso 3: ya hay alguien esperando o se pasó de la ventana temporal
+                    // ************************ Caso 3: ya hay alguien esperando o se pasó de la
+                    // ventana temporal
                 } else {
                     mutex.release();
                     fire(transitionIndex, false);
@@ -150,6 +154,7 @@ public class Monitor {
         }
     }
 
+    // probando el efecto de las uñas en las teclasss, kinda incómodo but idk
     public Boolean isFinalized() {
         return finalized;
     }

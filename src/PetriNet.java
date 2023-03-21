@@ -9,11 +9,13 @@ public class PetriNet {
     private int[][] backwardMatrix;
     private int[][] currentMarking;
     private static HashMap<Integer, Long> timeSensitiveTransitions;
-    private int alpha, beta;
+    private int beta;
+    private int[] alpha;
     public int[] sleepingThreads;
     private static long currentPeriod;
+    private static Policy policy;
 
-    public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking, int alpha, int beta) {
+    public PetriNet(int[][] incMatrix, int[][] backwardMatrix, int[][] initialMarking, int[] alpha, int beta) {
         this.incMatrix = incMatrix;
         this.backwardMatrix = backwardMatrix;
         this.currentMarking = initialMarking;
@@ -21,6 +23,7 @@ public class PetriNet {
         currentPeriod = 0;
         this.alpha = alpha;
         this.beta = beta;
+        policy = Policy.getInstance();
 
         sleepingThreads = new int[Constants.TRANSITIONS_COUNT];
         Arrays.fill(sleepingThreads, 0);
@@ -116,7 +119,7 @@ public class PetriNet {
             if (testWindowPeriod(transitionIndex) == false) {
             /*     System.out.println("Thread " + Thread.currentThread().getId() + " periodo actual: " +
                 currentPeriod);    */
-                if (getCurrentPeriod(transitionIndex) < alpha) {
+                if (getCurrentPeriod(transitionIndex) < alpha[Policy.whatInvIs(transitionIndex)]) {
                     // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
                     // de espera, entonces me duermo
 
@@ -167,7 +170,7 @@ public class PetriNet {
      */
     private Boolean testWindowPeriod(int transitionIndex) {
         currentPeriod = getCurrentPeriod(transitionIndex);
-        if (alpha < currentPeriod && currentPeriod < beta)
+        if (alpha[Policy.whatInvIs(transitionIndex)] < currentPeriod && currentPeriod < beta)
             return true;
         else
             return false;
@@ -223,7 +226,7 @@ public class PetriNet {
         // |------------|
         // ventana de disparo
 
-        time = alpha - currentPeriod;
+        time = Math.max(0l, alpha[Policy.whatInvIs(transitionIndex)] - currentPeriod);
         return time;
     }
 }

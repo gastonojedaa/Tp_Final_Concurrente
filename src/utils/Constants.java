@@ -71,6 +71,6 @@ public final class Constants {
         public static final Boolean DEBUG = false;
         public static final Boolean CONSOLE_LOGGING = true;
 
-        public static final int ALPHA = 150;
+        public static final int[] ALPHA = {5, 5, 20, 5};
         public static final int BETA = 100000000;
 }
