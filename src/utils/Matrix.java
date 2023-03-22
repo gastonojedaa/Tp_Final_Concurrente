@@ -70,7 +70,7 @@ public final class Matrix {
     }
 
     // Unused but may be helpful in the future
-    private static int dotProduct(int[] vectorA, int[] vectorB) {
+/*     private static int dotProduct(int[] vectorA, int[] vectorB) {
 
         int product = 0;
         int n = vectorA.length;
@@ -79,5 +79,5 @@ public final class Matrix {
             product = product + vectorA[i] * vectorB[i];
 
         return product;
-    }
+    } */
 }
