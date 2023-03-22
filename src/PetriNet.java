@@ -112,11 +112,16 @@ public class PetriNet {
         // pregunto si es una transición temporal
         if (timeSensitiveTransitions.containsKey(transitionIndex)) {
             // pregunto si hay alguien esperando
-            if (sleepingThreads[transitionIndex] == 1) {
+
+/************ COMENTÉ ESTO PORQUE POR LA FORMA DE LA RED NUNCA DEBERÍA PASAR, CAPAZ SE ESTABA MODIFICANDO EL ARRAY SleepingThreads
+                DE MANERA CONCURRENTE Y POR ESO SE DABA EL "TERCER CASO" QUE NO DEBERÍA OCURRIR
+*/
+
+          /*   if (sleepingThreads[transitionIndex] == 1) {
                 // hay una transición esperando, nadie mas puede intentar dispararla
                 return false; // (?????)
-            }
-            if (testWindowPeriod(transitionIndex) == false) {
+            } */
+            /* if (testWindowPeriod(transitionIndex) == false) { */
             /*     System.out.println("Thread " + Thread.currentThread().getId() + " periodo actual: " +
                 currentPeriod);    */
                 if (getCurrentPeriod(transitionIndex) < alpha[Policy.whatInvIs(transitionIndex)]) {
@@ -125,8 +130,8 @@ public class PetriNet {
 
                     sleepingThreads[transitionIndex] = 1;
                     return false;
-                }
-                return false;
+               /* } 
+                return false; */
             }
         }
 
