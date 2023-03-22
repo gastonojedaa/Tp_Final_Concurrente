@@ -70,7 +70,9 @@ public final class Constants {
         public static final String LOG_FILE_PATH = "";
         public static final Boolean DEBUG = false;
         public static final Boolean CONSOLE_LOGGING = true;
+        
+        public static final int BASE_ALPHA = 6;
 
-        public static final int[] ALPHA = {5, 5, 20, 5};
+        public static final int[] ALPHA = {BASE_ALPHA, BASE_ALPHA*2, BASE_ALPHA*3, BASE_ALPHA*2};
         public static final int BETA = 100000000;
 }

@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import utils.Constants;
 
@@ -110,32 +111,41 @@ public class Monitor {
             try {
 
                 // ************************ Caso 1: tiene que dormir
-                    int[][] sensTransitions = petriNet.getSensTransitions(); 
-                    if (petriNet.sleepingThreads[transitionIndex] > 0) {
-                    int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
+                
+                if (petriNet.sleepingThreads[transitionIndex] > 0) {
 
+                    int[][] sensTransitions = petriNet.getSensTransitions();
+                    int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
                     if (transitionToWakeUp != -1) {
                         waitingThreads[transitionToWakeUp]--;
                         transitionQueues[transitionToWakeUp].release();
-                    }else{
+                    } else {
                         mutex.release();
                     }
                     // System.out.println("Thread " + Thread.currentThread().getId() + " released
                     // the mutex");
                     long timeToSleep = petriNet.howMuchToSleep(transitionIndex);
                     // print id of the current thread
-                    System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
+/*                     System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
                             + Constants.transitionIndexes[transitionIndex] + " and is going to sleep for " + timeToSleep
-                            + " ms");
+                            + " ms"); */
                     Thread.sleep(timeToSleep);
                     petriNet.sleepingThreads[transitionIndex] = 0;
-                    System.out.println("Thread " + Thread.currentThread().getId() + " woke up from sleeping");
+/*                     System.out.println("Thread " + Thread.currentThread().getId() + " woke up from sleeping");
+ */
+/*                     waitingThreads[transitionIndex]++;
 
+                    System.out.println("Waiting threads:" + Arrays.toString(waitingThreads));
+
+                    transitionQueues[transitionIndex].acquire(); */
                     fire(transitionIndex, false); // ver flag wentToSleep
 
                     // ************************ Caso 2: no está sensibilizada
                 } else if (!(petriNet.isTransitionValid(transitionIndex))) {
                     waitingThreads[transitionIndex]++; // incremento la cantidad de hilos esperando
+
+  /*                   System.out.println("Waiting threads:" + Arrays.toString(waitingThreads)); */
+
                     mutex.release();
                     transitionQueues[transitionIndex].acquire(); // cola de espera de recursos
                     // Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con
