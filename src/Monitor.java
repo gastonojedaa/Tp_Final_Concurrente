@@ -4,16 +4,14 @@ import utils.Constants;
 
 public class Monitor {
     private static Monitor instance = null;
-    private static Policy policy = Policy.getInstance();
+    private static Policy policy;
     private static Semaphore[] transitionQueues;
-    // private static WaitingQueues waitingThreads;
     private static int waitingThreads[];
-    // private static WaitingQueues sleepingThreads;
     private static Semaphore mutex;
     private static PetriNet petriNet;
     private static int numberOfTransitionsFired;
     private static Boolean finalized;
-    private Boolean canBeFired; // k del video de mico
+    private Boolean canBeFired;
 
     private Monitor() {
     }
@@ -21,6 +19,7 @@ public class Monitor {
     public static synchronized Monitor getInstance() {
         if (Monitor.instance == null) {
             Monitor.instance = new Monitor();
+            policy = Policy.getInstance();
             Monitor.petriNet = new PetriNet(Constants.INCIDENCE_MATRIX, Constants.BACKWARD_MATRIX,
                     Constants.INITIAL_MARKING, Constants.ALPHA, Constants.BETA);
             waitingThreads = new int[Constants.TRANSITIONS_COUNT];
@@ -72,7 +71,9 @@ public class Monitor {
             // Si puede dispararse, incrementa el número de transiciones disparadas
             numberOfTransitionsFired++;
             policy.increment(Constants.transitionIndexes[transitionIndex]);
-            System.out.println("Thread "+Thread.currentThread().getId() +  " fired "+Constants.transitionIndexes[transitionIndex] +"\nNumber of transitions fired: " + numberOfTransitionsFired);
+            System.out.println("Thread " + Thread.currentThread().getId() + " fired "
+                    + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
+                    + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 1000) {
                 finalized = true;
                 return;
@@ -95,7 +96,7 @@ public class Monitor {
         } else {
             try {
 
-// ************************ Caso 1: tiene que dormir                
+                // ************************ Caso 1: tiene que dormir
                 if (petriNet.sleepingThreads[transitionIndex] > 0) {
 
                     int[][] sensTransitions = petriNet.getSensTransitions();
@@ -108,21 +109,23 @@ public class Monitor {
                     }
                     long timeToSleep = petriNet.howMuchToSleep(transitionIndex);
                     // print id of the current thread
-                   System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
+                    System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
                             + Constants.transitionIndexes[transitionIndex] + " and is going to sleep for " + timeToSleep
-                            + " ms"); 
+                            + " ms");
                     Thread.sleep(timeToSleep);
                     petriNet.sleepingThreads[transitionIndex] = 0;
                     System.out.println("Thread " + Thread.currentThread().getId() + " woke up from sleeping");
- 
-/*                     waitingThreads[transitionIndex]++;
 
-                    System.out.println("Waiting threads:" + Arrays.toString(waitingThreads));
-
-                    transitionQueues[transitionIndex].acquire();  */
+                    /*
+                     * waitingThreads[transitionIndex]++;
+                     * 
+                     * System.out.println("Waiting threads:" + Arrays.toString(waitingThreads));
+                     * 
+                     * transitionQueues[transitionIndex].acquire();
+                     */
                     fire(transitionIndex, false); // ver flag wentToSleep
 
-// ************************ Caso 2: no está sensibilizada
+                    // ************************ Caso 2: no está sensibilizada
                 } else if (!(petriNet.isTransitionValid(transitionIndex))) {
                     System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
                             + Constants.transitionIndexes[transitionIndex] + " but it's not sensibilized");
@@ -133,14 +136,18 @@ public class Monitor {
                     // la transición correspondiente.
                     fire(transitionIndex, true);
 
-// ************************ Caso 3: ya hay alguien esperando o se pasó de la ventana temporal
-                }  /* else {
-                    // print thread id and what transtion it tried to fire
-                    System.out.println("Thread " + Thread.currentThread().getId() + " tried to fire "
-                            + Constants.transitionIndexes[transitionIndex] + " but it's not valid");
-                    mutex.release();
-                    fire(transitionIndex, false);
-                }  */
+                    // ************************ Caso 3: ya hay alguien esperando o se pasó de la
+                    // ventana temporal
+                } /*
+                   * else {
+                   * // print thread id and what transtion it tried to fire
+                   * System.out.println("Thread " + Thread.currentThread().getId() +
+                   * " tried to fire "
+                   * + Constants.transitionIndexes[transitionIndex] + " but it's not valid");
+                   * mutex.release();
+                   * fire(transitionIndex, false);
+                   * }
+                   */
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -167,4 +174,103 @@ public class Monitor {
     // ⢸⠀⠀⠀⠀⠀⡌⠀⠈⡆⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
     // ⢸⠀⠀⠀⠀⢠⠃⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸
     // ⢸⠀⠀⠀⠀⢸⠀⠀⠀⠁⠀⠀⠀⠀⠀⠀⠀⠷
+
+    public void fire2(int transitionIndex, Boolean hasMutex) {
+        // Cola de entrada
+        if (!hasMutex) {
+            try {
+                mutex.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Veo si la transición está sensibilizada
+        Boolean sens = petriNet.isTransitionValid(transitionIndex);
+
+        // Veo si hay alguien durmiendo
+        Boolean isSomeoneSleeping = petriNet.sleepingThreads[transitionIndex] > 0;
+
+        // Si no está sensibilizada, la pongo en la cola de espera
+        if (!sens || isSomeoneSleeping) {
+            waitingThreads[transitionIndex]++; // incremento la cantidad de hilos esperando
+            mutex.release();
+            try {
+                transitionQueues[transitionIndex].acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // cola de espera de recursos
+            // Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con
+            // la transición correspondiente.
+            fire2(transitionIndex, true);
+        }
+
+        // Si esta sensibilizada reviso si esta en la ventana de disparo
+        long ms = petriNet.timeToWindow(transitionIndex);
+
+        // Se paso de la ventana temporal
+        if (ms == -1) {
+            System.out.println("Out of window. Timestamp is bigger than beta.");
+            mutex.release();
+        }
+        // Se puede disparar
+        else if (ms == 0) {
+            int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
+            fireSequence[0][transitionIndex] = 1;
+            int[][] oldSensTransitions = petriNet.getSensTransitions();
+            petriNet.updateMarking(fireSequence);
+            int[][] newSensTransitions = petriNet.getSensTransitions();
+
+            for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
+                if (PetriNet.timeSensitiveTransitions.containsKey(i)) {
+                    if (oldSensTransitions[0][i] == 0 && newSensTransitions[0][i] == 1)
+                        petriNet.setNewTimeStamp(i);
+                }
+            }
+
+            numberOfTransitionsFired++;
+            policy.increment(Constants.transitionIndexes[transitionIndex]);
+            System.out.println("Thread " + Thread.currentThread().getId() + " fired "
+                    + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
+                    + numberOfTransitionsFired);
+            if (numberOfTransitionsFired == 1000) {
+                finalized = true;
+                return;
+            }
+            int[][] sensTransitions = petriNet.getSensTransitions();
+            // Disparo el hilo que pertenezca al invariante con menor promedio de disparos
+            int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
+
+            if (transitionToWakeUp != -1) {
+                waitingThreads[transitionToWakeUp]--;
+                transitionQueues[transitionToWakeUp].release();
+                return;
+            }
+
+            // si no hay hilos esperando y que puedan ser disparados, libero el mutex
+            mutex.release();
+            return;
+        }
+        // Tiene que dormir
+        else {
+            try {
+                // Avisa que esta esperando la ventana temporal
+                petriNet.sleepingThreads[transitionIndex] = 1;
+
+                // Libera el mutex y se va a dormir
+                mutex.release();
+                Thread.sleep(ms);
+
+                // Cuando se despierta vuelve a intentar disparar
+                mutex.acquire();
+                petriNet.sleepingThreads[transitionIndex] = 0;
+
+                fire2(transitionIndex, true);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

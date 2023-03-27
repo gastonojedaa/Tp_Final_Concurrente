@@ -8,7 +8,7 @@ public class PetriNet {
     private int[][] incMatrix;
     private int[][] backwardMatrix;
     private int[][] currentMarking;
-    private static HashMap<Integer, Long> timeSensitiveTransitions;
+    public static HashMap<Integer, Long> timeSensitiveTransitions;
     private int beta;
     private int[] alpha;
     public int[] sleepingThreads;
@@ -52,9 +52,7 @@ public class PetriNet {
         int[][] sensTransitions = new int[1][Constants.TRANSITIONS_COUNT];
 
         for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
-            // System.out.println(i);
             for (int j = 0; j < Constants.PLACES_COUNT; j++) {
-                // System.out.println(j);
                 if (backwardMatrix[j][i] == 1 && backwardMatrix[j][i] > currentMarking[0][j]) {
                     sensTransitions[0][i] = 0;
                     break;
@@ -74,10 +72,7 @@ public class PetriNet {
      */
     public Boolean isTransitionValid(int transitionIndex) {
         int[][] sensTransitions = getSensTransitions();
-        if (sensTransitions[0][transitionIndex] == 1)
-            return true;
-        else
-            return false;
+        return sensTransitions[0][transitionIndex] == 1;
     }
 
     /**
@@ -99,6 +94,34 @@ public class PetriNet {
         return 0;
     }
 
+    public Boolean isSomeoneSleeping(int transitionIndex) {
+        return sleepingThreads[transitionIndex] > 0;
+    }
+
+    public long timeToWindow(int transitionIndex) {
+        // Si no es transicion temporal puedo disparar
+        if (!timeSensitiveTransitions.containsKey(transitionIndex))
+            return 0;
+
+        // Calculo donde estoy respecto a la ventana
+        currentPeriod = getCurrentPeriod(transitionIndex);
+        long alpha_value = alpha[Policy.whatInvIs(transitionIndex)];
+
+        // Si estoy antes de la ventana, tengo que esperar x ms
+        if (currentPeriod < alpha_value)
+            return alpha_value - currentPeriod;
+
+        // Actualizo el timestamp
+        setNewTimeStamp(transitionIndex);
+
+        // Si estoy dentro de la ventana, puedo disparar
+        if (currentPeriod < beta)
+            return 0;
+
+        // En caso contrario me pase de la ventana
+        return -1;
+    }
+
     /**
      * @return true si pudo disparar la transicion, false si no pudo porque no era
      *         válida
@@ -113,25 +136,35 @@ public class PetriNet {
         if (timeSensitiveTransitions.containsKey(transitionIndex)) {
             // pregunto si hay alguien esperando
 
-/************ COMENTÉ ESTO PORQUE POR LA FORMA DE LA RED NUNCA DEBERÍA PASAR, CAPAZ SE ESTABA MODIFICANDO EL ARRAY SleepingThreads
-                DE MANERA CONCURRENTE Y POR ESO SE DABA EL "TERCER CASO" QUE NO DEBERÍA OCURRIR
-*/
+            /************
+             * COMENTÉ ESTO PORQUE POR LA FORMA DE LA RED NUNCA DEBERÍA PASAR, CAPAZ SE
+             * ESTABA MODIFICANDO EL ARRAY SleepingThreads
+             * DE MANERA CONCURRENTE Y POR ESO SE DABA EL "TERCER CASO" QUE NO DEBERÍA
+             * OCURRIR
+             */
 
-          /*   if (sleepingThreads[transitionIndex] == 1) {
-                // hay una transición esperando, nadie mas puede intentar dispararla
-                return false; // (?????)
-            } */
+            /*
+             * if (sleepingThreads[transitionIndex] == 1) {
+             * // hay una transición esperando, nadie mas puede intentar dispararla
+             * return false; // (?????)
+             * }
+             */
             /* if (testWindowPeriod(transitionIndex) == false) { */
-            /*     System.out.println("Thread " + Thread.currentThread().getId() + " periodo actual: " +
-                currentPeriod);    */
-                if (getCurrentPeriod(transitionIndex) < alpha[Policy.whatInvIs(transitionIndex)]) {
-                    // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
-                    // de espera, entonces me duermo
+            /*
+             * System.out.println("Thread " + Thread.currentThread().getId() +
+             * " periodo actual: " +
+             * currentPeriod);
+             */
+            if (getCurrentPeriod(transitionIndex) < alpha[Policy.whatInvIs(transitionIndex)]) {
+                // no estoy dentro de la ventana temporal, pero todavía no llegué al límite
+                // de espera, entonces me duermo
 
-                    sleepingThreads[transitionIndex] = 1;
-                    return false;
-               /* } 
-                return false; */
+                sleepingThreads[transitionIndex] = 1;
+                return false;
+                /*
+                 * }
+                 * return false;
+                 */
             }
         }
 
@@ -173,18 +206,23 @@ public class PetriNet {
      * @param transitionIndex
      * @return true si la transicion esta dentro de la ventana temporal, false si no
      */
-    private Boolean testWindowPeriod(int transitionIndex) {
+    private long testWindowPeriod(int transitionIndex) {
         currentPeriod = getCurrentPeriod(transitionIndex);
-        if (alpha[Policy.whatInvIs(transitionIndex)] < currentPeriod && currentPeriod < beta)
-            return true;
-        else
-            return false;
+        long alpha_value = alpha[Policy.whatInvIs(transitionIndex)];
+
+        if (alpha_value < currentPeriod && currentPeriod < beta)
+            return 0;
+
+        if (currentPeriod > beta)
+            return -1;
+
+        return currentPeriod - alpha_value;
     }
 
     /**
      * Actualiza la marca de tiempo de las trancisiones temporales sensibilizadas
      */
-    private void setNewTimeStamp(int transitionIndex) {
+    public void setNewTimeStamp(int transitionIndex) {
         /*
          * cuando se actualiza el estado de la red, se actualiza el marcado, esto puede
          * hacer que dejen de estar sensibilizadas algunas transiciones que estaban
@@ -197,16 +235,6 @@ public class PetriNet {
     // tiempo que la transicion lleva sensibilizada
     private long getCurrentPeriod(int transitionIndex) {
         long currentPeriod = System.currentTimeMillis() - timeSensitiveTransitions.get(transitionIndex);
-
-        // |---------------->
-        // sensib currentTimeMillis()
-
-        // print time sensitive transition and currentperiod
-        /*
-         * System.out.println("Transition: " + transitionIndex + " se sensibilizó: " +
-         * timeSensitiveTransitions.get(transitionIndex) + " tiempo actual: " +
-         * System.currentTimeMillis() + " periodo actual: " + currentPeriod);
-         */
         return currentPeriod;
     }
 
@@ -220,16 +248,6 @@ public class PetriNet {
         long time = 0;
         long currentPeriod = getCurrentPeriod(transitionIndex);
         // print thread and current period
-        
-        /*  System.out.println("(Sleep)Thread " + Thread.currentThread().getId() + " periodo actual: " +
-         currentPeriod);         
-          */
-        // alpha
-        // |---------------|
-        // |----------------------------|
-        // beta
-        // |------------|
-        // ventana de disparo
 
         time = Math.max(0l, alpha[Policy.whatInvIs(transitionIndex)] - currentPeriod);
         return time;
