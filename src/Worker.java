@@ -1,11 +1,11 @@
 public class Worker implements Runnable {
 
-    private int index = 0;
-    // private Boolean working = true;
+    private int index;
     private int[] transitionsIndex;
     private Monitor monitor;
 
     public Worker(int[] _transitionsIndex) {
+        index = 0;
         transitionsIndex = _transitionsIndex;
         monitor = Monitor.getInstance();
     }
@@ -14,7 +14,7 @@ public class Worker implements Runnable {
     public void run() {
         while (true) {
             monitor.fire2(transitionsIndex[index], false);
-            index = index == 2 ? 0 : index + 1;// TODO Cambiar a modulo
+            index = (index + 1) % 3;
         }
     }
 }
