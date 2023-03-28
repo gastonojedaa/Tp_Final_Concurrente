@@ -61,7 +61,7 @@ public class Monitor {
         Boolean isSomeoneSleeping = petriNet.sleepingThreads[transitionIndex] > 0;
 
         // Si no está sensibilizada, la pongo en la cola de espera
-        if (!sens || isSomeoneSleeping) {// TODO Review isSomeoneSleeping
+        if (!sens || isSomeoneSleeping) {
             waitingThreads[transitionIndex]++; // incremento la cantidad de hilos esperando
             mutex.release();
             try {
@@ -144,8 +144,8 @@ public class Monitor {
                 Thread.sleep(ms);
 
                 // Cuando se despierta vuelve a intentar disparar
-                petriNet.sleepingThreads[transitionIndex] = 0;
                 mutex.acquire();
+                petriNet.sleepingThreads[transitionIndex] = 0;
 
                 fire2(transitionIndex, true);
             } catch (InterruptedException e) {
