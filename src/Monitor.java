@@ -91,6 +91,7 @@ public class Monitor {
             int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
             fireSequence[0][transitionIndex] = 1;
             int[][] oldSensTransitions = petriNet.getSensTransitions();
+            System.out.println("-----------Init-----------");
             System.out.println("strSensTransitions: " + "T1 T13 T14 T15 T16 T17 T18 T2 T3 T4 T5 T6");
             System.out.println("oldSensTransitions: " + Arrays.deepToString(oldSensTransitions));
             petriNet.updateMarking(fireSequence);
@@ -109,7 +110,7 @@ public class Monitor {
             System.out.println("Thread " + Thread.currentThread().threadId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
                     + numberOfTransitionsFired);
-            if (numberOfTransitionsFired == 1000) {
+            if (numberOfTransitionsFired == 100) {
                 finalized = true;
                 return;
             }
@@ -119,11 +120,13 @@ public class Monitor {
 
             if (transitionToWakeUp != -1) {
                 System.out.println("transitionToWakeUp: " + Constants.transitionIndexes[transitionToWakeUp]);
+                System.out.println("-----------End-----------");
                 waitingThreads[transitionToWakeUp]--;
                 transitionQueues[transitionToWakeUp].release();
                 return;
             }
             System.out.println("There is no transitionToWakeUp: ");
+            System.out.println("-----------End-----------");
             // si no hay hilos esperando y que puedan ser disparados, libero el mutex
             mutex.release();
             return;
@@ -134,7 +137,6 @@ public class Monitor {
                 // Avisa que esta esperando la ventana temporal
                 petriNet.sleepingThreads[transitionIndex] = 1;
 
-                // 31231231231
                 // Revisa si puede disparar otro hilo que este esperando en la cola de
                 // transiciones
                 int[][] sensTransitions = petriNet.getSensTransitions();
