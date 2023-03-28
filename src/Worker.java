@@ -1,19 +1,20 @@
 public class Worker implements Runnable {
-    
-    private int index = 0;
-    //private Boolean working = true;
+
+    private int index;
     private int[] transitionsIndex;
+    private Monitor monitor;
 
     public Worker(int[] _transitionsIndex) {
+        index = 0;
         transitionsIndex = _transitionsIndex;
+        monitor = Monitor.getInstance();
     }
 
     @Override
     public void run() {
         while (true) {
-            Monitor.getInstance().fire(transitionsIndex[index], false);            
-            //Monitor.getInstance().fire(transitionsIndex[index]);
-            index = index == 2 ? 0 : index + 1;
+            monitor.fire2(transitionsIndex[index], false);
+            index = (index + 1) % 3;
         }
     }
 }

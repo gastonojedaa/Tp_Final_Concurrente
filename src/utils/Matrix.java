@@ -68,16 +68,4 @@ public final class Matrix {
 
         return transpose;
     }
-
-    // Unused but may be helpful in the future
-/*     private static int dotProduct(int[] vectorA, int[] vectorB) {
-
-        int product = 0;
-        int n = vectorA.length;
-
-        for (int i = 0; i < n; i++)
-            product = product + vectorA[i] * vectorB[i];
-
-        return product;
-    } */
 }
