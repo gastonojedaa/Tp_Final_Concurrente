@@ -73,6 +73,7 @@ public class Monitor {
             // Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con
             // la transición correspondiente.
             fire2(transitionIndex, true);
+            return;
         }
 
         // Si esta sensibilizada reviso si esta en la ventana de disparo
@@ -83,14 +84,18 @@ public class Monitor {
             System.out.println("Out of window. Timestamp is bigger than beta.");
             mutex.release();
             fire2(transitionIndex, false);
+            return;
         }
         // Se puede disparar
         else if (ms == 0) {
             int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
             fireSequence[0][transitionIndex] = 1;
             int[][] oldSensTransitions = petriNet.getSensTransitions();
+            System.out.println("strSensTransitions: " + "T1 T13 T14 T15 T16 T17 T18 T2 T3 T4 T5 T6");
+            System.out.println("oldSensTransitions: " + Arrays.deepToString(oldSensTransitions));
             petriNet.updateMarking(fireSequence);
             int[][] newSensTransitions = petriNet.getSensTransitions();
+            System.out.println("newSensTransitions: " + Arrays.deepToString(newSensTransitions));
 
             for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
                 if (PetriNet.timeSensitiveTransitions.containsKey(i)) {
@@ -113,11 +118,12 @@ public class Monitor {
             int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
 
             if (transitionToWakeUp != -1) {
+                System.out.println("transitionToWakeUp: " + Constants.transitionIndexes[transitionToWakeUp]);
                 waitingThreads[transitionToWakeUp]--;
                 transitionQueues[transitionToWakeUp].release();
                 return;
             }
-
+            System.out.println("There is no transitionToWakeUp: ");
             // si no hay hilos esperando y que puedan ser disparados, libero el mutex
             mutex.release();
             return;
@@ -128,19 +134,32 @@ public class Monitor {
                 // Avisa que esta esperando la ventana temporal
                 petriNet.sleepingThreads[transitionIndex] = 1;
 
-                // Libera el mutex y se va a dormir
-                mutex.release();
+                // 31231231231
+                // Revisa si puede disparar otro hilo que este esperando en la cola de
+                // transiciones
+                int[][] sensTransitions = petriNet.getSensTransitions();
+                int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
+
+                if (transitionToWakeUp != -1) {
+                    // Si puede disparar otro hilo, lo despierta y le pasa el mutex
+                    waitingThreads[transitionToWakeUp]--;
+                    transitionQueues[transitionToWakeUp].release();
+                } else {
+                    // Si no puede disparar otro hilo, libera el mutex
+                    mutex.release();
+                }
+
+                // Se va a dormir
                 Thread.sleep(ms);
 
                 // Cuando se despierta vuelve a intentar disparar
-                mutex.acquire();
                 petriNet.sleepingThreads[transitionIndex] = 0;
+                mutex.acquire();
 
                 fire2(transitionIndex, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }
