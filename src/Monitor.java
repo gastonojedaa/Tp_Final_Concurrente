@@ -110,7 +110,7 @@ public class Monitor {
             System.out.println("Thread " + Thread.currentThread().threadId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
                     + numberOfTransitionsFired);
-            if (numberOfTransitionsFired == 100) {
+            if (numberOfTransitionsFired == 1000) {
                 finalized = true;
                 return;
             }
@@ -137,19 +137,8 @@ public class Monitor {
                 // Avisa que esta esperando la ventana temporal
                 petriNet.sleepingThreads[transitionIndex] = 1;
 
-                // Revisa si puede disparar otro hilo que este esperando en la cola de
-                // transiciones
-                int[][] sensTransitions = petriNet.getSensTransitions();
-                int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
-
-                if (transitionToWakeUp != -1) {
-                    // Si puede disparar otro hilo, lo despierta y le pasa el mutex
-                    waitingThreads[transitionToWakeUp]--;
-                    transitionQueues[transitionToWakeUp].release();
-                } else {
-                    // Si no puede disparar otro hilo, libera el mutex
-                    mutex.release();
-                }
+                // Libera el mutex
+                mutex.release();
 
                 // Se va a dormir
                 Thread.sleep(ms);
