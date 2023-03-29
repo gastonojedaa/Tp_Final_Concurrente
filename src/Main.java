@@ -1,8 +1,14 @@
 import utils.Constants;
+import utils.ConcurrentLogger;
 //import utils.ConcurrentLogger;
 
 public class Main {
     public static void main(String[] args) {
+
+        // Iniciar hilo dedicado al Logger
+        ConcurrentLogger logger = ConcurrentLogger.getInstance();
+        Thread loggerThread = new Thread(logger);
+        loggerThread.start();
 
         Thread[] threads = new Thread[Constants.THREADS_COUNT];
 
