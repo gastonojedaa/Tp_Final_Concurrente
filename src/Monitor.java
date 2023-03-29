@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import utils.Constants;
+import utils.ConcurrentLogger;
 
 public class Monitor {
     private static Monitor instance = null;
@@ -11,8 +12,10 @@ public class Monitor {
     private static PetriNet petriNet;
     private static int numberOfTransitionsFired;
     private static Boolean finalized;
+    private ConcurrentLogger logger;
 
     private Monitor() {
+        logger = ConcurrentLogger.getInstance();
     }
 
     public static synchronized Monitor getInstance() {
@@ -107,7 +110,8 @@ public class Monitor {
 
             numberOfTransitionsFired++;
             policy.increment(transitionIndex);
-            System.out.println("Thread " + Thread.currentThread().threadId() + " fired "
+            logger.logInfo("T" + transitionIndex + " fired");
+            System.out.println("Thread " + Thread.currentThread().getId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
                     + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 1000) {
