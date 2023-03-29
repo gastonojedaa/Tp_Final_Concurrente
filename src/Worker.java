@@ -13,7 +13,7 @@ public class Worker implements Runnable {
     @Override
     public void run() {
         while (true) {
-            monitor.fire2(transitionsIndex[index], false);
+            monitor.fire(transitionsIndex[index], false);
             index = (index + 1) % 3;
         }
     }
