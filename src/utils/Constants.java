@@ -43,6 +43,26 @@ public final class Constants {
                         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } };
 
         public static final int[][] INITIAL_MARKING = { { 3, 2, 3, 0, 0, 3, 0, 0, 0, 3, 2, 1, 1, 0, 2, 3, 0, 0 } };
+
+        public static final int P1_INDEX = 0;
+        public static final int P100_INDEX = 1;
+        public static final int P13_INDEX = 2;
+        public static final int P14_INDEX = 3;
+        public static final int P15_INDEX = 4;
+        public static final int P16_INDEX = 5;
+        public static final int P17_INDEX = 6;
+        public static final int P18_INDEX = 7;
+        public static final int P2_INDEX = 8;
+        public static final int P200_INDEX = 9;
+        public static final int P25_INDEX = 10;
+        public static final int P26_INDEX = 11;
+        public static final int P28_INDEX = 12;
+        public static final int P3_INDEX = 13;
+        public static final int P300_INDEX = 14;
+        public static final int P4_INDEX = 15;
+        public static final int P5_INDEX = 16;
+        public static final int P6_INDEX = 17;
+
         public static final int PLACES_COUNT = INCIDENCE_MATRIX.length;
         public static final int TRANSITIONS_COUNT = INCIDENCE_MATRIX[0].length;
         public static final int THREADS_COUNT = 12;

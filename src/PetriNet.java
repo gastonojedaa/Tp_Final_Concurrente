@@ -81,13 +81,20 @@ public class PetriNet {
      */
     public int updateMarking(int[][] fireSequence) {
         try {
+            // Fundamental equation mk = mi + W*s
             this.currentMarking = Matrix.add(currentMarking,
                     Matrix.transpose(Matrix.multiply(incMatrix, Matrix.transpose(fireSequence))));
-            // Fundamental equation mk = mi + W*s
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             return -1;
         }
+
+        if (!checkPInvariants()) {
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            System.out.println("Error: Invariantes de P violados");
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        } // Chequeo los invariantes de P
+          // Si esto falla algo se rompio y deberia finalizar el programa
 
         return 0;
     }
@@ -138,4 +145,32 @@ public class PetriNet {
         long currentPeriod = System.currentTimeMillis() - timeSensitiveTransitions.get(transitionIndex);
         return currentPeriod;
     }
+
+    private boolean checkPInvariants() {
+        boolean I1 = (currentMarking[0][Constants.P1_INDEX] + currentMarking[0][Constants.P2_INDEX]
+                + currentMarking[0][Constants.P3_INDEX]) == 3;
+        boolean I2 = (currentMarking[0][Constants.P100_INDEX] + currentMarking[0][Constants.P2_INDEX]
+                + currentMarking[0][Constants.P5_INDEX]) == 2;
+        boolean I3 = (currentMarking[0][Constants.P13_INDEX] + currentMarking[0][Constants.P14_INDEX]
+                + currentMarking[0][Constants.P15_INDEX]) == 3;
+        boolean I4 = (currentMarking[0][Constants.P16_INDEX] + currentMarking[0][Constants.P17_INDEX]
+                + currentMarking[0][Constants.P18_INDEX]) == 3;
+        boolean I5 = (currentMarking[0][Constants.P14_INDEX] + currentMarking[0][Constants.P17_INDEX]
+                + currentMarking[0][Constants.P2_INDEX] + currentMarking[0][Constants.P200_INDEX]
+                + currentMarking[0][Constants.P5_INDEX]) == 3;
+        boolean I6 = (currentMarking[0][Constants.P14_INDEX] + currentMarking[0][Constants.P18_INDEX]
+                + currentMarking[0][Constants.P2_INDEX] + currentMarking[0][Constants.P25_INDEX]
+                + currentMarking[0][Constants.P6_INDEX]) == 2;
+        boolean I7 = (currentMarking[0][Constants.P26_INDEX] + currentMarking[0][Constants.P3_INDEX]
+                + currentMarking[0][Constants.P5_INDEX]) == 1;
+        boolean I8 = (currentMarking[0][Constants.P15_INDEX] + currentMarking[0][Constants.P17_INDEX]
+                + currentMarking[0][Constants.P28_INDEX]) == 1;
+        boolean I9 = (currentMarking[0][Constants.P14_INDEX] + currentMarking[0][Constants.P17_INDEX]
+                + currentMarking[0][Constants.P300_INDEX]) == 2;
+        boolean I10 = (currentMarking[0][Constants.P4_INDEX] + currentMarking[0][Constants.P5_INDEX]
+                + currentMarking[0][Constants.P6_INDEX]) == 3;
+
+        return (I1 && I2 && I3 && I4 && I5 && I6 && I7 && I8 && I9 && I10);
+    }
+
 }
