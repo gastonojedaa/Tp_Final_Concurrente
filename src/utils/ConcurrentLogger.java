@@ -21,7 +21,7 @@ public class ConcurrentLogger extends Thread {
         String format = "%5$s%n";
         System.setProperty("java.util.logging.SimpleFormatter.format", format);
 
-        String fileName = "log_" + LocalDateTime.now() + ".txt";
+        String fileName = "log" + ".txt";
         try {
             this.logFile = new File(fileName);
             if(logFile.createNewFile()) {
@@ -29,7 +29,7 @@ public class ConcurrentLogger extends Thread {
             } else {
                 System.out.println("File already exists.");
             }
-            logFileHandler = new FileHandler(fileName, true);
+            logFileHandler = new FileHandler(fileName, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
