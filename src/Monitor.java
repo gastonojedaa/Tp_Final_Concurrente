@@ -107,7 +107,7 @@ public class Monitor {
 
             numberOfTransitionsFired++;
             policy.increment(transitionIndex);
-            System.out.println("Thread " + Thread.currentThread().threadId() + " fired "
+            System.out.println("Thread " + Thread.currentThread().getId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
                     + numberOfTransitionsFired);
             if (numberOfTransitionsFired == 1000) {
