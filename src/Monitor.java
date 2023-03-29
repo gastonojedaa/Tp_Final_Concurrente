@@ -44,7 +44,7 @@ public class Monitor {
         return finalized;
     }
 
-    public void fire2(int transitionIndex, Boolean hasMutex) {
+    public void fire(int transitionIndex, Boolean hasMutex) {
         // Cola de entrada
         if (!hasMutex) {
             try {
@@ -72,7 +72,7 @@ public class Monitor {
             // cola de espera de recursos
             // Cuando despierta, se llama recursivamente, sin intentar tomar el mutex y con
             // la transición correspondiente.
-            fire2(transitionIndex, true);
+            fire(transitionIndex, true);
             return;
         }
 
@@ -83,7 +83,7 @@ public class Monitor {
         if (ms == -1) {
             System.out.println("Out of window. Timestamp is bigger than beta.");
             mutex.release();
-            fire2(transitionIndex, false);
+            fire(transitionIndex, false);
             return;
         }
         // Se puede disparar
@@ -147,7 +147,7 @@ public class Monitor {
                 mutex.acquire();
                 petriNet.sleepingThreads[transitionIndex] = 0;
 
-                fire2(transitionIndex, true);
+                fire(transitionIndex, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
