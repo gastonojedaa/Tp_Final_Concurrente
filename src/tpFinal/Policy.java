@@ -1,6 +1,8 @@
+package tpFinal;
+
 import java.util.Arrays;
 import java.util.HashMap;
-import utils.Constants;
+import tpFinal.utils.Constants;
 
 public class Policy {
     private static Policy instance = null;

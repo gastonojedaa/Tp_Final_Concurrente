@@ -1,3 +1,5 @@
+package tpFinal;
+
 public class Worker implements Runnable {
 
     private int index;

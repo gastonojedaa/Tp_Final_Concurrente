@@ -1,4 +1,5 @@
-package utils;
+package tpFinal.utils;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -6,7 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.io.File;
-import java.time.LocalDateTime;
+
+import tpFinal.Monitor;
 
 public class ConcurrentLogger extends Thread {
 
@@ -24,7 +26,7 @@ public class ConcurrentLogger extends Thread {
         String fileName = "log" + ".txt";
         try {
             this.logFile = new File(fileName);
-            if(logFile.createNewFile()) {
+            if (logFile.createNewFile()) {
                 System.out.println("File created: " + logFile.getName());
             } else {
                 System.out.println("File already exists.");
@@ -63,31 +65,30 @@ public class ConcurrentLogger extends Thread {
     public void logInfo(String message) {
         logMessageQueue.add(message);
     }
-/* 
-    public void logDebug(String message) {
-        logMessageQueue.add("DEBUG - " + message);
-    }
 
-    public void logError(String message) {
-        logMessageQueue.add("ERROR - " + message);
-    }
-*/
+    /*
+     * public void logDebug(String message) {
+     * logMessageQueue.add("DEBUG - " + message);
+     * }
+     * 
+     * public void logError(String message) {
+     * logMessageQueue.add("ERROR - " + message);
+     * }
+     */
     @Override
     public void run() {
 
+        // while (Monitor.finalized == false) {
         while (true) {
             if (!logMessageQueue.isEmpty()) {
+                System.out.println("Logger thread running");
                 String message = logMessageQueue.poll();
                 logger.log(Level.INFO, message);
-                //if (message.startsWith("INFO")) {
-                //    logger.log(Level.INFO, message);
-                //} else if (message.startsWith("DEBUG")) {
-                //    logger.log(Level.FINEST, message);
-                //} else if (message.startsWith("ERROR")) {
-                //    logger.log(Level.SEVERE, message);
-                //}
             }
         }
+        // Exit gracefully
+        // logFileHandler.close();
+        // System.out.println("Logger thread finished");
+        // System.exit(0);
     }
 }
-

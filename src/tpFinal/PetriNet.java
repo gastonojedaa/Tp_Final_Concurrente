@@ -1,5 +1,7 @@
-import utils.Constants;
-import utils.Matrix;
+package tpFinal;
+
+import tpFinal.utils.Constants;
+import tpFinal.utils.Matrix;
 import java.util.HashMap;
 import java.util.Arrays;
 

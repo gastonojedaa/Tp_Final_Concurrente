@@ -1,4 +1,4 @@
-package utils;
+package tpFinal.utils;
 
 public final class Matrix {
 

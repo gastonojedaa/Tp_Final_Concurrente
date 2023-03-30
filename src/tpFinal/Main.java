@@ -1,5 +1,7 @@
-import utils.Constants;
-import utils.ConcurrentLogger;
+package tpFinal;
+
+import tpFinal.utils.Constants;
+import tpFinal.utils.ConcurrentLogger;
 //import utils.ConcurrentLogger;
 
 public class Main {
@@ -32,7 +34,10 @@ public class Main {
             threads[i].start();
         }
 
-        while (!Monitor.getInstance().isFinalized()) {
+        try {
+            loggerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         System.out.println("Finalizado");
