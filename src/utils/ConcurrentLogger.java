@@ -1,4 +1,5 @@
 package utils;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -6,7 +7,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.io.File;
-import java.time.LocalDateTime;
 
 public class ConcurrentLogger extends Thread {
 
@@ -18,13 +18,13 @@ public class ConcurrentLogger extends Thread {
 
     private ConcurrentLogger() {
 
-        String format = "%5$s%n";
+        String format = "%5$s ";
         System.setProperty("java.util.logging.SimpleFormatter.format", format);
 
         String fileName = "log" + ".txt";
         try {
             this.logFile = new File(fileName);
-            if(logFile.createNewFile()) {
+            if (logFile.createNewFile()) {
                 System.out.println("File created: " + logFile.getName());
             } else {
                 System.out.println("File already exists.");
@@ -63,15 +63,7 @@ public class ConcurrentLogger extends Thread {
     public void logInfo(String message) {
         logMessageQueue.add(message);
     }
-/* 
-    public void logDebug(String message) {
-        logMessageQueue.add("DEBUG - " + message);
-    }
 
-    public void logError(String message) {
-        logMessageQueue.add("ERROR - " + message);
-    }
-*/
     @Override
     public void run() {
 
@@ -79,15 +71,7 @@ public class ConcurrentLogger extends Thread {
             if (!logMessageQueue.isEmpty()) {
                 String message = logMessageQueue.poll();
                 logger.log(Level.INFO, message);
-                //if (message.startsWith("INFO")) {
-                //    logger.log(Level.INFO, message);
-                //} else if (message.startsWith("DEBUG")) {
-                //    logger.log(Level.FINEST, message);
-                //} else if (message.startsWith("ERROR")) {
-                //    logger.log(Level.SEVERE, message);
-                //}
             }
         }
     }
 }
-
