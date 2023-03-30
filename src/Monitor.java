@@ -110,11 +110,11 @@ public class Monitor {
 
             numberOfTransitionsFired++;
             policy.increment(transitionIndex);
-            logger.logInfo("T" + transitionIndex + " fired");
+            logger.logInfo("T" + Constants.transitionIndexes[transitionIndex]);
             System.out.println("Thread " + Thread.currentThread().getId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
                     + numberOfTransitionsFired);
-            if (numberOfTransitionsFired == 1000) {
+            if (Policy.totalInvariantsFired == 1000) {
                 finalized = true;
                 return;
             }
