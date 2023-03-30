@@ -83,8 +83,8 @@ public class Monitor {
         long ms = petriNet.timeToWindow(transitionIndex);
 
         // Se paso de la ventana temporal
-        if (ms == -1) {
-            System.out.println("Out of window. Timestamp is bigger than beta.");
+        if (ms == -1) {/* 
+            System.out.println("Out of window. Timestamp is bigger than beta."); */
             mutex.release();
             fire(transitionIndex, false);
             return;
@@ -94,12 +94,12 @@ public class Monitor {
             int[][] fireSequence = new int[1][Constants.TRANSITIONS_COUNT];
             fireSequence[0][transitionIndex] = 1;
             int[][] oldSensTransitions = petriNet.getSensTransitions();
-            System.out.println("-----------Init-----------");
-            System.out.println("strSensTransitions: " + "T1 T13 T14 T15 T16 T17 T18 T2 T3 T4 T5 T6");
-            System.out.println("oldSensTransitions: " + Arrays.deepToString(oldSensTransitions));
+            //System.out.println("-----------Init-----------");
+            //System.out.println("strSensTransitions: " + "T1 T13 T14 T15 T16 T17 T18 T2 T3 T4 T5 T6");
+            //System.out.println("oldSensTransitions: " + Arrays.deepToString(oldSensTransitions));
             petriNet.updateMarking(fireSequence);
             int[][] newSensTransitions = petriNet.getSensTransitions();
-            System.out.println("newSensTransitions: " + Arrays.deepToString(newSensTransitions));
+            //System.out.println("newSensTransitions: " + Arrays.deepToString(newSensTransitions));
 
             for (int i = 0; i < Constants.TRANSITIONS_COUNT; i++) {
                 if (PetriNet.timeSensitiveTransitions.containsKey(i)) {
@@ -111,9 +111,9 @@ public class Monitor {
             numberOfTransitionsFired++;
             policy.increment(transitionIndex);
             logger.logInfo("T" + Constants.transitionIndexes[transitionIndex]);
-            System.out.println("Thread " + Thread.currentThread().getId() + " fired "
+/*             System.out.println("Thread " + Thread.currentThread().getId() + " fired "
                     + Constants.transitionIndexes[transitionIndex] + "\nNumber of transitions fired: "
-                    + numberOfTransitionsFired);
+                    + numberOfTransitionsFired); */
             if (Policy.totalInvariantsFired == 1000) {
                 finalized = true;
                 return;
@@ -123,14 +123,14 @@ public class Monitor {
             int transitionToWakeUp = policy.whoToFire(sensTransitions, waitingThreads);
 
             if (transitionToWakeUp != -1) {
-                System.out.println("transitionToWakeUp: " + Constants.transitionIndexes[transitionToWakeUp]);
-                System.out.println("-----------End-----------");
+/*                 System.out.println("transitionToWakeUp: " + Constants.transitionIndexes[transitionToWakeUp]);
+                System.out.println("-----------End-----------"); */
                 waitingThreads[transitionToWakeUp]--;
                 transitionQueues[transitionToWakeUp].release();
                 return;
-            }
+            }/* 
             System.out.println("There is no transitionToWakeUp: ");
-            System.out.println("-----------End-----------");
+            System.out.println("-----------End-----------"); */
             // si no hay hilos esperando y que puedan ser disparados, libero el mutex
             mutex.release();
             return;

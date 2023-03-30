@@ -9,6 +9,8 @@ public class Main {
         ConcurrentLogger logger = ConcurrentLogger.getInstance();
         Thread loggerThread = new Thread(logger);
         loggerThread.start();
+        // save start time
+        long start_time = System.currentTimeMillis();
 
         Thread[] threads = new Thread[Constants.THREADS_COUNT];
 
@@ -34,7 +36,11 @@ public class Main {
 
         while (!Monitor.getInstance().isFinalized()) {
         }
-
+        // save end time
+        long end_time = System.currentTimeMillis();
+        // calculate execution time
+        long execution_time = end_time - start_time;
+        System.out.println("Execution time: " + execution_time + " ms");
         System.out.println("Finalizado");
     }
 }
