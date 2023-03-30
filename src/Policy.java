@@ -6,6 +6,7 @@ public class Policy {
     private static Policy instance = null;
     private static int transitionInv;
     private static int[] counters = new int[4];
+    public static int totalInvariantsFired;
     private static Boolean[] invariants = new Boolean[4];
     private int fireableTransitions[] = new int[Constants.TRANSITIONS_COUNT];// TODO Maybe change int to boolean
     public static HashMap<Integer, Integer> transitionToInvariant;
@@ -23,6 +24,8 @@ public class Policy {
 
             Arrays.fill(invariants, false);
             Arrays.fill(counters, 0);
+
+            totalInvariantsFired = 0;
 
             transitionToInvariant = new HashMap<Integer, Integer>();
 
@@ -54,7 +57,11 @@ public class Policy {
      */
     public void increment(int transitionIndex) {
         transitionInv = transitionToInvariant.get(transitionIndex);
-        counters[transitionInv]++;
+        if (transitionIndex == Constants.T_INVARIANTS[transitionInv][2]) {
+            counters[transitionInv]++;
+            totalInvariantsFired++;
+        }
+
         System.out.println("Contador 1: " + counters[0] + " \nContador 2: " + counters[1] + " \nContador 3: "
                 + counters[2] + " \nContador 4: " + counters[3]);
     }

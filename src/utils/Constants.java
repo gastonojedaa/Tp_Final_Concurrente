@@ -67,18 +67,20 @@ public final class Constants {
         public static final int TRANSITIONS_COUNT = INCIDENCE_MATRIX[0].length;
         public static final int THREADS_COUNT = 12;
 
-/*         public static final int T1_INDEX = 0;
-        public static final int T13_INDEX = 1;
-        public static final int T14_INDEX = 2;
-        public static final int T15_INDEX = 3;
-        public static final int T16_INDEX = 4;
-        public static final int T17_INDEX = 5;
-        public static final int T18_INDEX = 6;
-        public static final int T2_INDEX = 7;
-        public static final int T3_INDEX = 8;
-        public static final int T4_INDEX = 9;
-        public static final int T5_INDEX = 10;
-        public static final int T6_INDEX = 11; */
+        /*
+         * public static final int T1_INDEX = 0;
+         * public static final int T13_INDEX = 1;
+         * public static final int T14_INDEX = 2;
+         * public static final int T15_INDEX = 3;
+         * public static final int T16_INDEX = 4;
+         * public static final int T17_INDEX = 5;
+         * public static final int T18_INDEX = 6;
+         * public static final int T2_INDEX = 7;
+         * public static final int T3_INDEX = 8;
+         * public static final int T4_INDEX = 9;
+         * public static final int T5_INDEX = 10;
+         * public static final int T6_INDEX = 11;
+         */
 
         public static final int[] transitionIndexes = { 1, 13, 14, 15, 16, 17, 18, 2, 3, 4, 5, 6 };
 
@@ -86,6 +88,8 @@ public final class Constants {
         public static final int[] T_INVARIANT_2 = { 9, 10, 11 };
         public static final int[] T_INVARIANT_3 = { 1, 2, 3 };
         public static final int[] T_INVARIANT_4 = { 4, 5, 6 };
+
+        public static final int[][] T_INVARIANTS = { T_INVARIANT_1, T_INVARIANT_2, T_INVARIANT_3, T_INVARIANT_4 };
 
         public static final String LOG_FILE_PATH = "";
         public static final Boolean DEBUG = false;
