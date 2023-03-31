@@ -36,11 +36,34 @@ public class Main {
 
         while (!Monitor.getInstance().isFinalized()) {
         }
+
+        printExecutionTime(start_time);
+
+        printResults();
+
+        System.out.println("Finalizado");
+    }
+
+    private static void printExecutionTime(long start_time) {
         // save end time
         long end_time = System.currentTimeMillis();
         // calculate execution time
         long execution_time = end_time - start_time;
-        System.out.println("Execution time: " + execution_time + " ms");
-        System.out.println("Finalizado");
+        System.out.println("--------------------------------------------");
+        System.out.println("Tiempo de ejecucion: " + execution_time + " ms");
+        System.out.println("--------------------------------------------");
+    }
+
+    private static void printResults() {
+        System.out.println("Resultados:");
+        System.out.println("--------------------------------------------");
+        System.out.println("Total de transiciones disparadas : " + Monitor.numberOfTransitionsFired);
+        System.out.println("--------------------------------------------");
+        System.out.println("Total de invariantes ejecutados: " + Policy.totalInvariantsFired);
+        System.out.println("--------------------------------------------");
+        System.out.println("Contador inv 1: " + Policy.counters[0] + " \nContador inv 2: " +
+                Policy.counters[1] + " \nContador inv 3: "
+                + Policy.counters[2] + " \nContador inv 4: " + Policy.counters[3]);
+        System.out.println("--------------------------------------------");
     }
 }

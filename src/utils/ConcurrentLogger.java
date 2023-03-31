@@ -25,9 +25,9 @@ public class ConcurrentLogger extends Thread {
         try {
             this.logFile = new File(fileName);
             if (logFile.createNewFile()) {
-                System.out.println("File created: " + logFile.getName());
+                // System.out.println("File created: " + logFile.getName());
             } else {
-                System.out.println("File already exists.");
+                // System.out.println("File already exists.");
             }
             logFileHandler = new FileHandler(fileName, false);
         } catch (Exception e) {

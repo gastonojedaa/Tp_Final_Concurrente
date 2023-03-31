@@ -5,7 +5,7 @@ import utils.Constants;
 public class Policy {
     private static Policy instance = null;
     private static int transitionInv;
-    private static int[] counters = new int[4];
+    public static int[] counters = new int[4];
     public static int totalInvariantsFired;
     private static Boolean[] invariants = new Boolean[4];
     private int fireableTransitions[] = new int[Constants.TRANSITIONS_COUNT];// TODO Maybe change int to boolean
@@ -62,8 +62,9 @@ public class Policy {
             totalInvariantsFired++;
         }
 
-        System.out.println("Contador 1: " + counters[0] + " \nContador 2: " + counters[1] + " \nContador 3: "
-                + counters[2] + " \nContador 4: " + counters[3]);
+        // System.out.println("Contador 1: " + counters[0] + " \nContador 2: " +
+        // counters[1] + " \nContador 3: "
+        // + counters[2] + " \nContador 4: " + counters[3]);
     }
 
     /**

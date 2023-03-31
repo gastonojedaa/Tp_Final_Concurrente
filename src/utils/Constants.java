@@ -95,8 +95,8 @@ public final class Constants {
         public static final Boolean DEBUG = false;
         public static final Boolean CONSOLE_LOGGING = false;
 
-        public static final int BASE_ALPHA = 0;
+        public static final int BASE_ALPHA = 2;
 
         public static final int[] ALPHA = { BASE_ALPHA, BASE_ALPHA, BASE_ALPHA, BASE_ALPHA };
-        public static final int BETA =  1000000;
+        public static final int BETA = 1000000;
 }
