@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.concurrent.Semaphore;
 import utils.Constants;
 import utils.ConcurrentLogger;
@@ -13,6 +12,7 @@ public class Monitor {
     public static int numberOfTransitionsFired;
     private static Boolean finalized;
     private ConcurrentLogger logger;
+    private static int wentToSleepCount;
 
     private Monitor() {
         logger = ConcurrentLogger.getInstance();
@@ -122,6 +122,7 @@ public class Monitor {
              * + numberOfTransitionsFired);
              */
             if (Policy.totalInvariantsFired == 1000) {
+                System.out.println("\nWent to sleep "+wentToSleepCount+" times. Alpha: "+Constants.BASE_ALPHA+". Total time sleeping: "+(Constants.BASE_ALPHA*wentToSleepCount));
                 finalized = true;
                 return;
             }
@@ -154,7 +155,7 @@ public class Monitor {
 
                 // Libera el mutex
                 mutex.release();
-
+                wentToSleepCount++;
                 // Se va a dormir
                 Thread.sleep(ms);
 
