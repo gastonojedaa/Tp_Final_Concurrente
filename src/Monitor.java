@@ -13,6 +13,7 @@ public class Monitor {
     private static Boolean finalized;
     private ConcurrentLogger logger;
     private static int wentToSleepCount;
+    private static int totalTimeSleeping;
 
     private Monitor() {
         logger = ConcurrentLogger.getInstance();
@@ -122,7 +123,8 @@ public class Monitor {
              * + numberOfTransitionsFired);
              */
             if (Policy.totalInvariantsFired == 1000) {
-                System.out.println("\nWent to sleep "+wentToSleepCount+" times. Alpha: "+Constants.BASE_ALPHA+". Total time sleeping: "+(Constants.BASE_ALPHA*wentToSleepCount));
+                System.out.println("\nWent to sleep "+wentToSleepCount+" times. Alpha: "+Constants.BASE_ALPHA+". Total time sleeping: "+totalTimeSleeping+" ms");
+                //(Policy.counters[0]*2*Constants.ALPHA[0]+Policy.counters[1]*2*Constants.ALPHA[1]+Policy.counters[2]*2*Constants.ALPHA[2]+Policy.counters[3]*2*Constants.ALPHA[3])
                 finalized = true;
                 return;
             }
@@ -156,6 +158,7 @@ public class Monitor {
                 // Libera el mutex
                 mutex.release();
                 wentToSleepCount++;
+                totalTimeSleeping += ms;
                 // Se va a dormir
                 Thread.sleep(ms);
 
