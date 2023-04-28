@@ -42,6 +42,7 @@ public class Main {
         printResults();
 
         System.out.println("Finalizado");
+        System.exit(0);
     }
 
     private static void printExecutionTime(long start_time) {
